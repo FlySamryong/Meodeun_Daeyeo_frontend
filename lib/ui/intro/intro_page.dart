@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import '../service/auth/service/kakao_login_service.dart';
+import '../../service/auth/service/kakao_login_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +26,7 @@ class RentalApp extends StatelessWidget {
   }
 }
 
+// 앱 소개 화면 및 로그인 화면
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
 
