@@ -1,14 +1,21 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meodeundaeyeo/ui/widget/chat_message/popup_menu_item.dart';
+import 'package:meodeundaeyeo/ui/widget/chat_message/return_code_dialog.dart';
+import 'package:meodeundaeyeo/ui/widget/chat_message/return_verification_dialog.dart';
+import 'amount_dialog.dart';
+import 'message_popup_menu.dart';
 
-// 메시지 입력 필드 위젯
 class MessageInputField extends StatefulWidget {
   final TextEditingController messageController;
   final VoidCallback onSendMessage;
+  final bool isSender;
+  final bool isRenter;
 
   const MessageInputField({
     required this.messageController,
     required this.onSendMessage,
+    required this.isSender,
+    required this.isRenter,
     super.key,
   });
 
@@ -17,7 +24,16 @@ class MessageInputField extends StatefulWidget {
 }
 
 class _MessageInputFieldState extends State<MessageInputField> {
-  bool _showMenu = false; // 메뉴 표시 여부를 제어하는 변수
+  bool _showMenu = false;
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _returnCodeController = TextEditingController();
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _returnCodeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,34 +42,15 @@ class _MessageInputFieldState extends State<MessageInputField> {
         if (_showMenu)
           Align(
             alignment: Alignment.centerLeft,
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _showMenu = false;
-                    });
-                    // 송금하기 로직
-                  },
-                  child: PopupMenuItemWidget(
-                    text: '송금하기',
-                    color: const Color(0xFF079702),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _showMenu = false;
-                    });
-                    // 반납하기 로직
-                  },
-                  child: PopupMenuItemWidget(
-                    text: '반납하기',
-                    color: const Color(0xFF079702),
-                  ),
-                ),
-              ],
+            child: MessagePopupMenu(
+              isRenter: widget.isSender,
+              onSendAmount: () =>
+                  _showDialog(AmountDialog(controller: _amountController)),
+              onVerifyReturn: () => _showDialog(
+                  ReturnVerificationDialog(controller: _returnCodeController)),
+              onGenerateReturnCode: () =>
+                  _showDialog(ReturnCodeDialog(generatedCode: '123456')),
+              onRequestDepositReturn: () => {},
             ),
           ),
         const SizedBox(height: 10),
@@ -76,7 +73,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
                 icon: const Icon(Icons.add, color: Color(0xFF079702)),
                 onPressed: () {
                   setState(() {
-                    _showMenu = !_showMenu; // 메뉴 열기/닫기
+                    _showMenu = !_showMenu;
                   });
                 },
               ),
@@ -97,6 +94,13 @@ class _MessageInputFieldState extends State<MessageInputField> {
           ),
         ),
       ],
+    );
+  }
+
+  void _showDialog(Widget dialogContent) {
+    showDialog(
+      context: context,
+      builder: (context) => dialogContent,
     );
   }
 }
