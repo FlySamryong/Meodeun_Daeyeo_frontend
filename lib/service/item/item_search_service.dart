@@ -63,7 +63,6 @@ class ItemService {
   Map<String, dynamic> _parseResponse(
       Uint8List bodyBytes, BuildContext context) {
     final responseData = jsonDecode(utf8.decode(bodyBytes));
-    print('fetchItems: $responseData');
 
     if (responseData['isSuccess'] == true &&
         responseData['data'] is Map<String, dynamic> &&

@@ -73,31 +73,29 @@ class ChatCard extends StatelessWidget {
 
   /// 채팅 정보 빌더 (이름 및 마지막 메시지)
   Widget _buildChatInfo(String? itemName, String? lastMessage) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(height: 5),
-          Text(
-            itemName ?? 'Unknown',
-            style: const TextStyle(
-              fontFamily: 'BM Dohyeon',
-              fontSize: 16,
-              color: Colors.black,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(height: 5),
+        Text(
+          itemName ?? 'Unknown',
+          style: const TextStyle(
+            fontFamily: 'BM Dohyeon',
+            fontSize: 16,
+            color: Colors.black,
           ),
-          const SizedBox(height: 5),
-          Text(
-            lastMessage ?? 'No message',
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black54,
-            ),
-            overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 5),
+        Text(
+          lastMessage ?? 'No message',
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.black54,
           ),
-        ],
-      ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 
