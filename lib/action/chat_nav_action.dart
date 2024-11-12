@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import '../ui/chat/chat_list_page.dart';
+import '../ui/chat/chatting_list/chat_list_page.dart';
 import 'bottom_nav_action.dart';
 
 class ChatNavAction implements BottomNavAction {

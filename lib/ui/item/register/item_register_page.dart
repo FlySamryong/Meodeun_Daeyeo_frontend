@@ -1,36 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:meodeundaeyeo/action/chat_nav_action.dart';
-import 'package:meodeundaeyeo/ui/bottom_nav_bar.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import '../../action/favorite_nav_action.dart';
-import '../../action/home_nav_action.dart';
-import '../../action/mypage_nav_action.dart';
-import '../app_title.dart';
-import 'FavoriteItemListWidget.dart';
+import '../../../action/chat_nav_action.dart';
+import '../../../action/favorite_nav_action.dart';
+import '../../../action/home_nav_action.dart';
+import '../../../action/mypage_nav_action.dart';
+import '../../app_title.dart';
+import '../../bottom_nav_bar.dart';
+import 'form_content.dart';
 
-// 좋아요 목록 페이지
-class FavoritesPage extends StatelessWidget {
+// 물품 등록 페이지
+class ItemRegisterPage extends StatelessWidget {
   final SizingInformation sizingInformation;
 
-  const FavoritesPage({super.key, required this.sizingInformation});
+  const ItemRegisterPage({required this.sizingInformation, super.key});
 
   @override
   Widget build(BuildContext context) {
-    final double baseWidth = 360;
     final double scaleWidth =
-        (sizingInformation.screenSize.width / baseWidth).clamp(0.8, 1.2);
-
+        (sizingInformation.screenSize.width / 360).clamp(0.8, 1.2);
     return Scaffold(
       body: Center(
         child: Container(
-          width: baseWidth * scaleWidth,
+          width: 360 * scaleWidth,
           child: Column(
             children: [
               const SizedBox(height: 20),
-              const AppTitle(title: '좋아요 목록'),
+              const AppTitle(title: '물품 등록'),
+              const SizedBox(height: 10),
               Expanded(
-                child: FavoriteItemListWidget(
-                    sizingInformation: sizingInformation),
+                child: SingleChildScrollView(
+                  child: FormContentWidget(scaleWidth: scaleWidth),
+                ),
               ),
               BottomNavBar(
                 homeAction: HomeNavAction(sizingInformation),
