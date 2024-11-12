@@ -1,32 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import '../../service/auth/service/auth_service.dart';
 import '../../service/auth/service/kakao_login_service.dart';
+import '../../utils/show_error_dialog.dart';
+import '../home/main_page.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // runApp() 호출 전 Flutter SDK 초기화
-  KakaoSdk.init(
-    nativeAppKey: '25d976307eb5178b1ccaf831fd63e1fa',
-    javaScriptAppKey: '42559361f1b22248d18364e6999d0a13',
-  );
-
-  runApp(const RentalApp());
-}
-
-class RentalApp extends StatelessWidget {
-  const RentalApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const IntroScreen(),
-    );
-  }
-}
-
-// 앱 소개 화면 및 로그인 화면
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
 
@@ -38,6 +16,7 @@ class _IntroScreenState extends State<IntroScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   final KakaoLoginService _kakaoLoginService = KakaoLoginService();
+  final AuthService _authService = AuthService();
 
   static const double baseWidth = 360;
   static const double baseHeight = 800;
@@ -51,16 +30,16 @@ class _IntroScreenState extends State<IntroScreen> {
       body: ResponsiveBuilder(
         builder: (context, sizingInfo) {
           final double scaleWidth =
-              (sizingInfo.screenSize.width / baseWidth).clamp(0.8, 1.2);
+              _calculateScale(sizingInfo.screenSize.width, baseWidth);
           final double scaleHeight =
-              (sizingInfo.screenSize.height / baseHeight).clamp(0.8, 1.2);
+              _calculateScale(sizingInfo.screenSize.height, baseHeight);
 
           return Center(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 1 * scaleHeight),
+                  SizedBox(height: 20 * scaleHeight),
                   _buildAppTitle(scaleWidth),
                   SizedBox(height: 45 * scaleHeight),
                   _buildIntroBox(scaleWidth, scaleHeight),
@@ -75,7 +54,12 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 
-  // 앱 제목 위젯
+  /// 스케일 계산 함수
+  double _calculateScale(double screenSize, double baseSize) {
+    return (screenSize / baseSize).clamp(0.8, 1.2);
+  }
+
+  /// 앱 제목 위젯 빌더
   Widget _buildAppTitle(double scaleWidth) {
     return Text(
       '뭐든 대여',
@@ -85,12 +69,11 @@ class _IntroScreenState extends State<IntroScreen> {
         fontSize: 32 * scaleWidth,
         fontFamily: 'BM Dohyeon',
         fontWeight: FontWeight.w400,
-        height: 1.0,
       ),
     );
   }
 
-  // 소개 컨텐츠 박스
+  /// 소개 컨텐츠 박스 빌더
   Widget _buildIntroBox(double scaleWidth, double scaleHeight) {
     return Container(
       width: 337 * scaleWidth,
@@ -116,7 +99,7 @@ class _IntroScreenState extends State<IntroScreen> {
     );
   }
 
-  // 소개 화면용 PageView
+  /// 페이지뷰 빌더
   Widget _buildPageView(double scaleWidth, double scaleHeight) {
     return Positioned(
       left: 4 * scaleWidth,
@@ -124,61 +107,65 @@ class _IntroScreenState extends State<IntroScreen> {
       child: Container(
         width: 328 * scaleWidth,
         height: 480 * scaleHeight,
-        decoration: ShapeDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10 * scaleWidth),
-          ),
+          borderRadius: BorderRadius.circular(10 * scaleWidth),
         ),
         child: PageView(
           controller: _pageController,
           onPageChanged: (index) => setState(() => _currentPage = index),
-          children: List.generate(totalPageCount, (index) {
-            return Image.asset('assets/images/intro${index + 1}.png',
-                fit: BoxFit.cover);
-          }),
+          children:
+              List.generate(totalPageCount, (index) => _buildIntroImage(index)),
         ),
       ),
     );
   }
 
-  // 소개 화면용 페이지 인디케이터
+  /// 소개 이미지 빌더 함수
+  Widget _buildIntroImage(int index) {
+    return Image.asset(
+      'assets/images/intro${index + 1}.png',
+      fit: BoxFit.cover,
+    );
+  }
+
+  /// 페이지 인디케이터 빌더
   Widget _buildPageIndicator(double scaleWidth, double scaleHeight) {
     return Positioned(
       bottom: 20 * scaleHeight,
       left: (337 * scaleWidth) / 2 - 36,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(totalPageCount, (index) {
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            width: indicatorSize * scaleWidth,
-            height: indicatorSize * scaleHeight,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: _currentPage == index ? Color(0xFF079702) : Colors.grey,
-            ),
-          );
-        }),
+        children: List.generate(totalPageCount,
+            (index) => _buildIndicatorDot(index, scaleWidth, scaleHeight)),
       ),
     );
   }
 
-  // 카카오 로그인 버튼
+  /// 인디케이터 점 생성 함수
+  Widget _buildIndicatorDot(int index, double scaleWidth, double scaleHeight) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      width: indicatorSize * scaleWidth,
+      height: indicatorSize * scaleHeight,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: _currentPage == index ? const Color(0xFF079702) : Colors.grey,
+      ),
+    );
+  }
+
+  /// 카카오 로그인 버튼 빌더
   Widget _buildKakaoLoginButton(double scaleWidth, double scaleHeight) {
     return Container(
       width: 251 * scaleWidth,
       height: 45 * scaleHeight,
-      decoration: ShapeDecoration(
+      decoration: BoxDecoration(
         color: const Color(0xFF079702).withOpacity(0.95),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5 * scaleWidth),
-        ),
+        borderRadius: BorderRadius.circular(5 * scaleWidth),
       ),
       child: TextButton(
-        onPressed: () async {
-          await _kakaoLoginService.loginWithKakao(context);
-        },
+        onPressed: _handleKakaoLogin,
         style: TextButton.styleFrom(
           padding: EdgeInsets.symmetric(
             vertical: 8 * scaleHeight,
@@ -203,12 +190,32 @@ class _IntroScreenState extends State<IntroScreen> {
                 fontSize: 16 * scaleWidth,
                 fontFamily: 'BM Dohyeon',
                 fontWeight: FontWeight.bold,
-                height: 1.0,
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  /// 카카오 로그인 처리 함수
+  Future<void> _handleKakaoLogin() async {
+    final loginResponse = await _kakaoLoginService.loginWithKakao(context);
+
+    if (loginResponse != null) {
+      // 로그인 성공 시 MainPage로 이동
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResponsiveBuilder(
+            builder: (context, sizingInformation) =>
+                MainPage(sizingInformation: sizingInformation),
+          ),
+        ),
+      );
+    } else {
+      // 로그인 실패 시 오류 메시지 표시
+      showErrorDialog(context, "로그인에 실패했습니다. 다시 시도해주세요.");
+    }
   }
 }
