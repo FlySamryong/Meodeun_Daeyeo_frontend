@@ -76,6 +76,18 @@ class ApiClient {
     );
   }
 
+  // 인증 없이 GET 요청을 보내는 메서드
+  Future<http.Response> getWithoutAuth({
+    required String endpoint,
+  }) async {
+    Uri url = Uri.parse('$_baseUrl/$endpoint');
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+
+    return await http.get(url, headers: headers);
+  }
+
   /// 인증된 요청을 처리하고, 필요 시 토큰 갱신 후 재시도하는 메서드
   Future<http.Response> _sendAuthenticatedRequest({
     required String endpoint,
@@ -139,6 +151,6 @@ class ApiClient {
   /// 세션 만료 시 다이얼로그를 표시하고 로그인 화면으로 리다이렉트하는 메서드
   void _handleSessionExpiry(BuildContext context) {
     showErrorDialog(context, _sessionExpiredMessage);
-    Navigator.pushReplacementNamed(context, '/intro');
+    Navigator.pushReplacementNamed(context, '/login');
   }
 }

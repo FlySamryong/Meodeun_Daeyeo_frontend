@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import '../../service/item/item_search_service.dart';
 import '../item/detail/item_detail_page.dart';
@@ -36,6 +37,7 @@ class _ItemListWidgetState extends State<ItemListWidget> {
   @override
   void initState() {
     super.initState();
+
     /// 초기 데이터 로드
     _fetchMoreItems();
   }
@@ -43,6 +45,7 @@ class _ItemListWidgetState extends State<ItemListWidget> {
   @override
   void didUpdateWidget(covariant ItemListWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+
     /// 필터 값이나 검색어가 변경된 경우 새 데이터를 로드하도록 설정
     if (_shouldFetchData(oldWidget)) {
       _items.clear(); // 기존 데이터 초기화
@@ -98,7 +101,10 @@ class _ItemListWidgetState extends State<ItemListWidget> {
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollInfo) {
         if (_shouldLoadMore(scrollInfo)) {
-          _fetchMoreItems(); // 더 많은 아이템을 로드
+          // 프레임 완료 후에 _fetchMoreItems를 호출하도록 예약
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            _fetchMoreItems();
+          });
         }
         return false;
       },
