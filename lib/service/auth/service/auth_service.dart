@@ -21,9 +21,8 @@ class AuthService {
       String accessToken, BuildContext context) async {
     try {
       // API 클라이언트를 사용하여 로그인 요청을 보냅니다.
-      final response = await _apiClient.get(
+      final response = await _apiClient.getWithoutAuth(
         endpoint: 'auth/kakao/login?accessToken=$accessToken',
-        context: context,
       );
 
       // JSON 응답을 파싱하여 데이터로 변환합니다.
