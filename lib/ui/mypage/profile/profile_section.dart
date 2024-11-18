@@ -7,7 +7,7 @@ class ProfileSectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Container(
         decoration: _buildContainerDecoration(),
         padding: const EdgeInsets.all(10),
@@ -53,7 +53,7 @@ class ProfileSectionWidget extends StatelessWidget {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children:  [
+        children: [
           _buildProfileDetailText('닉네임: 홍길동', fontWeight: FontWeight.bold),
           SizedBox(height: 5),
           _buildProfileDetailText('이메일: example@example.com'),
@@ -69,7 +69,8 @@ class ProfileSectionWidget extends StatelessWidget {
   }
 
   /// 프로필 세부 사항 텍스트 스타일을 반환하는 함수
-  static Widget _buildProfileDetailText(String text, {FontWeight fontWeight = FontWeight.w100}) {
+  static Widget _buildProfileDetailText(String text,
+      {FontWeight fontWeight = FontWeight.w100}) {
     return Text(
       text,
       style: TextStyle(

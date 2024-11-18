@@ -8,6 +8,7 @@ import '../../../action/home_nav_action.dart';
 import '../../../action/mypage_nav_action.dart';
 import '../../app_title.dart';
 import '../../bottom_nav_bar.dart';
+import '../accout_register/account_registeration_dialog.dart';
 import 'profile_section.dart';
 import '../section.dart';
 
@@ -37,7 +38,74 @@ class MyPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
-                      const ProfileSectionWidget(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const ProfileSectionWidget(),
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                // 계좌 등록하기 버튼
+                                OutlinedButton(
+                                  onPressed: () =>
+                                      _showAccountRegistrationDialog(context),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor:
+                                        Theme.of(context).primaryColor,
+                                    backgroundColor: Colors.white,
+                                    side: BorderSide(
+                                      color: Theme.of(context).primaryColor,
+                                      width: 1.5,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 8),
+                                  ),
+                                  child: const Text(
+                                    "계좌 등록하기",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8), // 버튼 사이 간격
+                                // 거주지 등록하기 버튼
+                                OutlinedButton(
+                                  onPressed: () =>
+                                      {}, // 거주지 등록 페이지로 이동 (페이지 추가 필요)
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor:
+                                        Theme.of(context).primaryColor,
+                                    backgroundColor: Colors.white,
+                                    side: BorderSide(
+                                      color: Theme.of(context).primaryColor,
+                                      width: 1.5,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 8),
+                                  ),
+                                  child: const Text(
+                                    "거주지 등록하기",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 30),
                       _buildSection(
                         context,
@@ -85,6 +153,17 @@ class MyPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  /// 계좌 등록 다이얼로그 표시 함수
+  void _showAccountRegistrationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        // 계좌 등록 다이얼로그를 호출합니다.
+        return AccountRegistrationDialog(parentContext: context);
+      },
     );
   }
 
