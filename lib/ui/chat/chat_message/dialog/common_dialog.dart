@@ -55,6 +55,10 @@ class CommonDialog extends StatelessWidget {
       onPressed: () {
         Navigator.of(context).pop();
       },
+      style: TextButton.styleFrom(
+        splashFactory: NoSplash.splashFactory, // 눌림 효과 제거
+        foregroundColor: const Color(0xFF079702), // 텍스트 색상 설정
+      ),
       child: const Text(
         '확인',
         style: TextStyle(color: Color(0xFF079702)),

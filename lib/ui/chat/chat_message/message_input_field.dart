@@ -1,23 +1,32 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meodeundaeyeo/ui/chat/chat_message/dialog/return_code_dialog.dart';
-import 'package:meodeundaeyeo/ui/chat/chat_message/dialog/return_verification_dialog.dart';
+import '../../../service/rent/rent_service.dart';
+import '../../../utils/show_error_dialog.dart';
 import 'dialog/amount_dialog.dart';
+import 'dialog/return_code_dialog.dart';
+import 'dialog/return_deposit_dialog.dart';
+import 'dialog/return_verification_dialog.dart';
 import 'popup_menu/message_popup_menu.dart';
 
+/// 메시지 입력 필드 위젯
 class MessageInputField extends StatefulWidget {
   final TextEditingController messageController;
   final VoidCallback onSendMessage;
   final bool isSender;
   final bool isRenter;
+  final int roomId;
+  final int? rentId;
+  final ValueChanged<int> onRentIdUpdated; // rentId 업데이트 콜백 추가
 
   const MessageInputField({
     required this.messageController,
     required this.onSendMessage,
     required this.isSender,
     required this.isRenter,
-    super.key,
-  });
+    required this.roomId,
+    this.rentId,
+    required this.onRentIdUpdated,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _MessageInputFieldState createState() => _MessageInputFieldState();
@@ -39,42 +48,32 @@ class _MessageInputFieldState extends State<MessageInputField> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (_showMenu) _buildMessagePopupMenu(),
+        if (_showMenu) _buildPopupMenu(),
         const SizedBox(height: 10),
-        _buildMessageInputField(),
+        _buildInputField(),
       ],
     );
   }
 
-  /// 메뉴 토글 버튼 및 팝업 메뉴 생성
-  Widget _buildMessagePopupMenu() {
+  /// 팝업 메뉴 위젯
+  Widget _buildPopupMenu() {
     return Align(
       alignment: Alignment.centerLeft,
       child: MessagePopupMenu(
-        isRenter: widget.isSender,
-        onSendAmount: () => _showDialog(AmountDialog(controller: _amountController)),
-        onVerifyReturn: () => _showDialog(ReturnVerificationDialog(controller: _returnCodeController)),
-        onGenerateReturnCode: () => _showDialog(ReturnCodeDialog(generatedCode: '123456')),
-        onRequestDepositReturn: () => {},
+        isRenter: widget.isRenter,
+        onSendAmount: _showAmountDialog,
+        onVerifyReturn: _showReturnVerificationDialog,
+        onGenerateReturnCode: _showReturnCodeDialog,
+        onRequestDepositReturn: _showReturnDepositDialog,
       ),
     );
   }
 
-  /// 메시지 입력 필드 UI 구성
-  Widget _buildMessageInputField() {
+  /// 메시지 입력 필드 위젯
+  Widget _buildInputField() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade300,
-            offset: const Offset(0, 2),
-            blurRadius: 5,
-          ),
-        ],
-      ),
+      decoration: _inputFieldDecoration(),
       child: Row(
         children: [
           IconButton(
@@ -99,18 +98,100 @@ class _MessageInputFieldState extends State<MessageInputField> {
     );
   }
 
-  /// 다이얼로그를 표시하는 함수
-  void _showDialog(Widget dialogContent) {
-    showDialog(
-      context: context,
-      builder: (context) => dialogContent,
+  /// 입력 필드 스타일링
+  BoxDecoration _inputFieldDecoration() {
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(10),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.shade300,
+          offset: const Offset(0, 2),
+          blurRadius: 5,
+        ),
+      ],
     );
   }
 
-  /// 메뉴 토글 함수
+  /// 금액 입력 다이얼로그 표시
+  void _showAmountDialog() {
+    _showDialog(
+      builder: (context) => AmountDialog(
+        controller: _amountController,
+        roomId: widget.roomId,
+        onRentCreated: widget.onRentIdUpdated,
+      ),
+    );
+  }
+
+  /// 반환 인증 다이얼로그 표시
+  void _showReturnVerificationDialog() {
+    _showDialogWithRentId(
+      builder: (context) => ReturnVerificationDialog(
+        controller: _returnCodeController,
+        roomId: widget.roomId,
+        rentId: widget.rentId!,
+      ),
+    );
+  }
+
+  /// 반환 코드 생성 다이얼로그 표시
+  Future<void> _showReturnCodeDialog() async {
+    await _executeWithRentId(
+      action: () async {
+        final otp = await RentService().generateOtp(
+          context: context,
+          roomId: widget.roomId,
+          rentId: widget.rentId!,
+        );
+        _showDialog(
+          builder: (context) => ReturnCodeDialog(generatedCode: otp),
+        );
+      },
+    );
+  }
+
+  /// 보증금 반환 다이얼로그 표시
+  void _showReturnDepositDialog() {
+    _showDialogWithRentId(
+      builder: (context) => ReturnDepositDialog(
+        roomId: widget.roomId,
+        rentId: widget.rentId!,
+      ),
+    );
+  }
+
+  /// 메뉴 표시 여부 토글
   void _toggleMenu() {
     setState(() {
       _showMenu = !_showMenu;
     });
+  }
+
+  /// rentId가 필요한 다이얼로그 표시
+  void _showDialogWithRentId({required WidgetBuilder builder}) {
+    if (widget.rentId == null) {
+      showErrorDialog(context, "대여가 생성되지 않았습니다.");
+    } else {
+      _showDialog(builder: builder);
+    }
+  }
+
+  /// rentId가 필요한 작업 실행
+  Future<void> _executeWithRentId({required Future<void> Function() action}) async {
+    if (widget.rentId == null) {
+      showErrorDialog(context, "대여가 생성되지 않았습니다.");
+    } else {
+      try {
+        await action();
+      } catch (e) {
+        showErrorDialog(context, '오류 발생: $e');
+      }
+    }
+  }
+
+  /// 다이얼로그 표시
+  void _showDialog({required WidgetBuilder builder}) {
+    showDialog(context: context, builder: builder);
   }
 }

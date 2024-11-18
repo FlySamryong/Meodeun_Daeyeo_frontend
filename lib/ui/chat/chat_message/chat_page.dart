@@ -1,70 +1,40 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import '../../../service/chat/service/chat_page_service.dart';
 import '../../../utils/token_storage.dart';
-
+import '../../../utils/rent_id_storage.dart';
+import 'chat_message.dart';
 import 'chat_message_list.dart';
 import 'message_input_field.dart';
 import 'app_bar/appbar.dart';
 
-/// 채팅 메시지 타입
 enum ChatType {
-  TEXT, // 일반 텍스트 메시지
-  IMAGE, // 이미지 메시지
-  RENT_REQ, // 물품 대여 요청
-  RENT_ACCEPT, // 물품 대여 수락
-  RENT_AGREE, // 물품 대여 동의
-  DEPOSIT_REQ, // 보증금 반납 요청
-  DEPOSIT_RES, // 보증금 반납 응답
-  OVERDUE, // 연체
-  CANCEL, // 취소
-}
-
-/// 채팅 메시지 클래스
-class ChatMessage {
-  final String content;
-  final ChatType type;
-  final bool isSender;
-
-  ChatMessage({
-    required this.content,
-    required this.type,
-    required this.isSender,
-  });
-
-  // JSON에서 ChatMessage 객체로 변환
-  factory ChatMessage.fromJson(Map<String, dynamic> json, int currentUserId) {
-    return ChatMessage(
-      content: _decodeMessage(json['message']),
-      type: ChatType.values.firstWhere(
-        (e) => e.toString() == 'ChatType.${json['type']}',
-        orElse: () => ChatType.TEXT,
-      ),
-      isSender: json['senderId'] == currentUserId,
-    );
-  }
-
-  // UTF-8로 메시지를 디코딩
-  static String _decodeMessage(String message) {
-    try {
-      return utf8.decode(message.codeUnits);
-    } catch (e) {
-      return message;
-    }
-  }
+  TEXT,
+  IMAGE,
+  RENT_REQ,
+  RENT_ACCEPT,
+  RENT_AGREE,
+  DEPOSIT_REQ,
+  DEPOSIT_RES,
+  OVERDUE,
+  CANCEL,
+  NOTICE,
 }
 
 /// 채팅 페이지
 class ChatPage extends StatefulWidget {
   final SizingInformation sizingInformation;
   final int roomId;
+  final int ownerId;
   final String title;
 
   const ChatPage({
     required this.sizingInformation,
     required this.roomId,
+    required this.ownerId,
     required this.title,
     Key? key,
   }) : super(key: key);
@@ -77,21 +47,12 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final List<ChatMessage> _messages = [];
   final ScrollController _scrollController = ScrollController();
+
   StompClient? _stompClient;
   int? _currentUserId;
   String? _accessToken;
-  final ChatService chatService = ChatService();
-  bool isRenter = false;
-
-  final Map<ChatType, String> _chatTypeMessages = {
-    ChatType.RENT_REQ: '대여 요청이 수신되었습니다. 12시간 내로 확인해주세요.',
-    ChatType.RENT_ACCEPT: '대여 요청이 수락되었습니다. 대여 절차를 진행하세요.',
-    ChatType.RENT_AGREE: '대여가 최종 확정되었습니다. 일정에 따라 이용해주세요.',
-    ChatType.DEPOSIT_REQ: '반납까지 2시간 남았습니다. 반납 준비 부탁드립니다.',
-    ChatType.OVERDUE: '반납 기한이 초과되어 연체료가 부과됩니다.',
-  };
-
-  static const double baseWidth = 360.0;
+  int? _rentId;
+  final ChatService _chatService = ChatService();
 
   @override
   void initState() {
@@ -99,11 +60,14 @@ class _ChatPageState extends State<ChatPage> {
     _initializeChat();
   }
 
+  /// 초기화: 사용자 데이터 및 메시지 로드, Stomp 연결
   Future<void> _initializeChat() async {
     await _loadUserData();
     await _fetchChatMessages();
+    await _loadRentId();
   }
 
+  /// 사용자 데이터 로드
   Future<void> _loadUserData() async {
     _currentUserId = await TokenStorage.getUserId();
     _accessToken = await TokenStorage.getAccessToken();
@@ -112,8 +76,25 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  /// Rent ID 로드 및 상태 업데이트
+  Future<void> _loadRentId() async {
+    final rentId = await RentIdStorage.loadRentId(widget.roomId);
+    setState(() {
+      _rentId = rentId;
+    });
+  }
+
+  /// Rent ID 저장 및 상태 업데이트
+  Future<void> _updateRentId(int rentId) async {
+    setState(() {
+      _rentId = rentId;
+    });
+    await RentIdStorage.saveRentId(widget.roomId, rentId);
+  }
+
+  /// 채팅 메시지 로드
   Future<void> _fetchChatMessages() async {
-    final messages = await chatService.fetchChatMessages(
+    final messages = await _chatService.fetchChatMessages(
       roomId: widget.roomId,
       context: context,
     );
@@ -128,24 +109,21 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
-    _disposeControllers();
-    super.dispose();
-  }
-
-  void _disposeControllers() {
     _stompClient?.deactivate();
     _scrollController.dispose();
     _messageController.dispose();
+    super.dispose();
   }
 
+  /// Stomp 연결 설정
   void _connectStomp() {
     _stompClient = StompClient(
       config: StompConfig(
         url: 'ws://54.180.28.151:8080/ws/stomp',
         onConnect: _onStompConnected,
-        onStompError: (frame) => print('STOMP error: ${frame.body}'),
-        onDisconnect: (frame) => print('Disconnected from STOMP'),
-        onWebSocketError: (error) => print('WebSocket error: $error'),
+        onStompError: (frame) => debugPrint('STOMP error: ${frame.body}'),
+        onDisconnect: (frame) => debugPrint('Disconnected from STOMP'),
+        onWebSocketError: (error) => debugPrint('WebSocket error: $error'),
         stompConnectHeaders: {'Authorization': 'Bearer $_accessToken'},
         webSocketConnectHeaders: {'Authorization': 'Bearer $_accessToken'},
         heartbeatOutgoing: const Duration(seconds: 10),
@@ -155,6 +133,7 @@ class _ChatPageState extends State<ChatPage> {
     _stompClient?.activate();
   }
 
+  /// Stomp 연결 성공 시 구독
   void _onStompConnected(StompFrame frame) {
     _stompClient?.subscribe(
       destination: '/topic/chat/room/${widget.roomId}',
@@ -162,6 +141,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  /// 수신 메시지 처리
   void _receiveMessage(String? body) {
     if (body != null) {
       final messageData = jsonDecode(body);
@@ -172,12 +152,14 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  /// 메시지 전송
   void _sendMessage() {
-    if (_messageController.text.isNotEmpty && _currentUserId != null) {
+    final text = _messageController.text.trim();
+    if (text.isNotEmpty && _currentUserId != null) {
       final message = {
         'chatRoomId': widget.roomId,
         'senderId': _currentUserId,
-        'message': _messageController.text,
+        'message': text,
         'type': 'TEXT',
       };
       _stompClient?.send(
@@ -188,6 +170,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  /// 스크롤을 맨 아래로 이동
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _scrollController.hasClients) {
@@ -200,85 +183,14 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void _sendSpecificMessage(ChatType type) {
-    final isSender = _determineSender(type);
-    final content = _chatTypeMessages[type] ?? '알 수 없는 메시지 타입입니다.';
-    _addMessage(content: content, type: type, isSender: isSender);
-  }
-
-  void _addMessage({
-    required String content,
-    required ChatType type,
-    required bool isSender,
-  }) {
-    setState(() {
-      _messages.insert(
-          0, ChatMessage(content: content, type: type, isSender: isSender));
-    });
-    _scrollToBottom();
-  }
-
-  bool _determineSender(ChatType type) {
-    return (type == ChatType.RENT_REQ || type == ChatType.RENT_AGREE)
-        ? isRenter
-        : !isRenter;
-  }
-
-  IconData _iconForType(ChatType type) {
-    switch (type) {
-      case ChatType.RENT_REQ:
-        return Icons.request_page;
-      case ChatType.RENT_ACCEPT:
-        return Icons.check;
-      case ChatType.RENT_AGREE:
-        return Icons.assignment_turned_in;
-      case ChatType.DEPOSIT_REQ:
-        return Icons.timer;
-      case ChatType.OVERDUE:
-        return Icons.warning;
-      default:
-        return Icons.message;
-    }
-  }
-
-  Color _colorForType(ChatType type) {
-    switch (type) {
-      case ChatType.RENT_REQ:
-        return Colors.orange;
-      case ChatType.RENT_ACCEPT:
-        return Colors.green;
-      case ChatType.RENT_AGREE:
-        return Colors.blue;
-      case ChatType.DEPOSIT_REQ:
-        return Colors.redAccent;
-      case ChatType.OVERDUE:
-        return Colors.red;
-      default:
-        return Colors.black;
-    }
-  }
-
-  Widget _buildChatTypeButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: ChatType.values
-          .where((type) => type != ChatType.TEXT)
-          .map((type) => IconButton(
-                icon: Icon(_iconForType(type), color: _colorForType(type)),
-                onPressed: () => _sendSpecificMessage(type),
-              ))
-          .toList(),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final double scaleWidth =
-        (widget.sizingInformation.screenSize.width / baseWidth).clamp(0.8, 1.2);
+        (widget.sizingInformation.screenSize.width / 360.0).clamp(0.8, 1.2);
     return Scaffold(
       body: Center(
         child: Container(
-          width: baseWidth * scaleWidth,
+          width: 360.0 * scaleWidth,
           child: Column(
             children: [
               const SizedBox(height: 20),
@@ -288,15 +200,21 @@ class _ChatPageState extends State<ChatPage> {
                 child: ChatMessageList(
                   messages: _messages,
                   scrollController: _scrollController,
+                  roomId: widget.roomId,
+                  rentId: _rentId,
+                  currentUserId: _currentUserId,
+                  ownerId: widget.ownerId,
                 ),
               ),
               MessageInputField(
                 messageController: _messageController,
                 onSendMessage: _sendMessage,
                 isSender: true,
-                isRenter: false,
+                isRenter: widget.ownerId != _currentUserId,
+                roomId: widget.roomId,
+                rentId: _rentId,
+                onRentIdUpdated: _updateRentId,
               ),
-              _buildChatTypeButtons(),
             ],
           ),
         ),

@@ -30,6 +30,7 @@ class ActionButtonsWidget extends StatelessWidget {
           builder: (context) => ChatPage(
             roomId: roomId,
             title: data['name'],
+            ownerId: data['owner']['memberId'],
             sizingInformation: sizingInformation,
           ),
         ),
