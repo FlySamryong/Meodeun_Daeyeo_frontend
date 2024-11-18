@@ -5,12 +5,14 @@ class ChatMessage {
   final String content;
   final ChatType type;
   final bool isSender;
+  final int? rentId; // Nullable 변경
   final DateTime createdAt;
 
   ChatMessage({
     required this.content,
     required this.type,
     required this.isSender,
+    required this.rentId,
     required this.createdAt,
   });
 
@@ -22,6 +24,7 @@ class ChatMessage {
         orElse: () => ChatType.TEXT,
       ),
       isSender: json['senderId'] == currentUserId,
+      rentId: json['rentId'] != null ? json['rentId'] as int : null,
       createdAt: DateTime.parse(json['createdAt']),
     );
   }
