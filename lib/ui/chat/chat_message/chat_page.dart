@@ -89,7 +89,7 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       _rentId = rentId;
     });
-    await RentIdStorage.saveRentId(widget.roomId, rentId);
+    RentIdStorage.saveRentId(widget.roomId, rentId);
   }
 
   /// 채팅 메시지 로드
@@ -145,7 +145,6 @@ class _ChatPageState extends State<ChatPage> {
   void _receiveMessage(String? body) {
     if (body != null) {
       final messageData = jsonDecode(body);
-
       if (messageData['rentId'] != null) {
         final rentId = messageData['rentId'] as int;
         _updateRentId(rentId);
