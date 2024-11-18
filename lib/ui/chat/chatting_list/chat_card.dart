@@ -17,8 +17,7 @@ class ChatCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildChatImage(chat['ownerProfileImage']),
-            // 프로필 이미지
+            _buildChatImage(chat['otherMemberProfile']),
             const SizedBox(width: 20),
             Expanded(
                 child: _buildChatInfo(chat['itemName'], chat['lastMessage'])),

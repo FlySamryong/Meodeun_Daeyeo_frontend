@@ -69,19 +69,21 @@ class _ChatListState extends State<ChatList> {
   /// 개별 채팅 항목을 구성하는 위젯
   Widget _buildChatItem(Map<String, dynamic> chat, int index) {
     return GestureDetector(
-      onTap: () => _navigateToChatPage(chat['chatRoomId'], chat['itemName']),
+      onTap: () => _navigateToChatPage(
+          chat['chatRoomId'], chat['itemName'], chat['ownerId']),
       child: ChatCard(chat: chat),
     );
   }
 
   /// 채팅 페이지로 이동하는 함수
-  void _navigateToChatPage(int roomId, String chatPartnerName) {
+  void _navigateToChatPage(int roomId, String chatPartnerName, int ownerId) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ChatPage(
           sizingInformation: widget.sizingInformation,
           roomId: roomId,
+          ownerId: ownerId,
           title: chatPartnerName,
         ),
       ),
