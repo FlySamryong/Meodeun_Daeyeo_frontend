@@ -145,6 +145,12 @@ class _ChatPageState extends State<ChatPage> {
   void _receiveMessage(String? body) {
     if (body != null) {
       final messageData = jsonDecode(body);
+
+      if (messageData['rentId'] != null) {
+        final rentId = messageData['rentId'] as int;
+        _updateRentId(rentId);
+      }
+
       setState(() {
         _messages.insert(0, ChatMessage.fromJson(messageData, _currentUserId!));
       });
