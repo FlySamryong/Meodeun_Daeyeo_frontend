@@ -3,15 +3,18 @@ import 'package:flutter/material.dart';
 /// 제출 버튼 위젯
 class SubmitButtonWidget extends StatelessWidget {
   final double scaleWidth;
+  final VoidCallback onPressed; // onPressed 콜백 추가
 
-  const SubmitButtonWidget({required this.scaleWidth, super.key});
+  const SubmitButtonWidget({
+    required this.scaleWidth,
+    required this.onPressed,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        // 제출 로직 처리
-      },
+      onPressed: onPressed, // 콜백 연결
       style: _buttonStyle(),
       child: _buttonText(),
     );

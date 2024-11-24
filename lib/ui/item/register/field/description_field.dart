@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 /// 물품 설명 필드 위젯
 class DescriptionFieldWidget extends StatelessWidget {
   final double scaleWidth;
+  final TextEditingController? controller; // 컨트롤러 추가
 
-  const DescriptionFieldWidget({required this.scaleWidth, super.key});
+  const DescriptionFieldWidget({
+    required this.scaleWidth,
+    this.controller,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +17,7 @@ class DescriptionFieldWidget extends StatelessWidget {
       padding: EdgeInsets.all(10 * scaleWidth),
       decoration: _buildContainerDecoration(),
       child: TextField(
+        controller: controller, // 컨트롤러 추가
         maxLines: 5,
         decoration: _buildInputDecoration(),
       ),

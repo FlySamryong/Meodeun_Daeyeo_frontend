@@ -4,10 +4,16 @@ import 'package:flutter/material.dart';
 class InputFieldWidget extends StatelessWidget {
   final String labelText;
   final double scaleWidth;
+  final TextEditingController? controller; // 컨트롤러 추가
+  final TextInputType? keyboardType; // 키보드 타입 추가
+  final Function(String)? onValueChanged; // 값 변경 콜백 추가
 
   const InputFieldWidget({
     required this.labelText,
     required this.scaleWidth,
+    this.controller,
+    this.keyboardType,
+    this.onValueChanged,
     super.key,
   });
 
@@ -17,6 +23,9 @@ class InputFieldWidget extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 10 * scaleWidth),
       decoration: _buildContainerDecoration(),
       child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        onChanged: onValueChanged, // 값 변경 시 호출
         decoration: _buildInputDecoration(),
       ),
     );
