@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../service/recent_view_item_service.dart';
+import '../../../service/member/member_service.dart';
 import '../../../utils/show_error_dialog.dart';
 import 'recently_view_item.dart';
 
@@ -13,7 +13,7 @@ class RecentlyViewedListWidget extends StatefulWidget {
 }
 
 class _RecentlyViewedListWidgetState extends State<RecentlyViewedListWidget> {
-  final RecentViewItemService _recentViewItemService = RecentViewItemService();
+  final MemberService _recentViewItemService = MemberService();
   late Future<List<Map<String, dynamic>>> _recentItems;
 
   bool _hasShownErrorDialog = false; // 오류 다이얼로그가 이미 표시되었는지 확인
