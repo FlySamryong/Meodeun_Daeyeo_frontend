@@ -34,13 +34,11 @@ class RecentlyViewedPage extends StatelessWidget {
     );
   }
 
-  /// 화면 크기 비율 계산 함수
   double _getScaleWidth() {
     final double baseWidth = 360;
     return (sizingInformation.screenSize.width / baseWidth).clamp(0.8, 1.2);
   }
 
-  /// 앱 타이틀 빌드 함수
   Widget _buildAppTitle() {
     return const Padding(
       padding: EdgeInsets.only(top: 20),
@@ -48,7 +46,6 @@ class RecentlyViewedPage extends StatelessWidget {
     );
   }
 
-  /// 콘텐츠 영역 빌드 함수
   Widget _buildContent() {
     return Expanded(
       child: SingleChildScrollView(
@@ -66,7 +63,6 @@ class RecentlyViewedPage extends StatelessWidget {
     );
   }
 
-  /// 하단 네비게이션 바 빌드 함수
   Widget _buildBottomNavBar() {
     return BottomNavBar(
       homeAction: HomeNavAction(sizingInformation),
