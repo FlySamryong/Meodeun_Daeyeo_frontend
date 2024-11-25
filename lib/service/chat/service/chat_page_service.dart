@@ -119,4 +119,32 @@ class ChatService {
   void _showErrorMessage(BuildContext context, String message) {
     showErrorDialog(context, message);
   }
+
+  /// 매너 온도 업데이트 메서드
+  Future<bool> updateMannerRate({
+    required int roomId,
+    required int mannerRate,
+    required BuildContext context,
+  }) async {
+    try {
+      final response = await apiClient.get(
+        endpoint:
+            'chat/room/update/mannerRate?roomId=$roomId&mannerRate=$mannerRate',
+        context: context,
+      );
+
+      final responseData = _parseResponse(response.bodyBytes);
+      if (_isRequestSuccessful(response, responseData)) {
+        return true;
+      } else {
+        _showErrorMessage(
+          context,
+          responseData['message'] ?? '매너 온도 업데이트에 실패했습니다.',
+        );
+      }
+    } catch (e) {
+      _showErrorMessage(context, _networkErrorMessage);
+    }
+    return false;
+  }
 }
