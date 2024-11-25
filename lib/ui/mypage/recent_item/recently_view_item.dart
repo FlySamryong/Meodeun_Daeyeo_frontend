@@ -5,13 +5,13 @@ class RecentlyViewedItemWidget extends StatelessWidget {
   final String title;
   final String price;
   final String period;
-  final String category;
+  final List<String> categories;
 
   const RecentlyViewedItemWidget({
     required this.title,
     required this.price,
     required this.period,
-    required this.category,
+    required this.categories,
     super.key,
   });
 
@@ -37,7 +37,7 @@ class RecentlyViewedItemWidget extends StatelessWidget {
     );
   }
 
-  /// 박스 스타일을 반환하는 함수
+  /// 박스 스타일
   BoxDecoration _buildBoxDecoration() {
     return BoxDecoration(
       color: Colors.white,
@@ -52,7 +52,7 @@ class RecentlyViewedItemWidget extends StatelessWidget {
     );
   }
 
-  /// 아이템 상세 정보를 반환하는 함수
+  /// 아이템 상세 정보
   Widget _buildItemDetails() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,13 +60,13 @@ class RecentlyViewedItemWidget extends StatelessWidget {
         _buildText(title, fontWeight: FontWeight.bold),
         const SizedBox(height: 5),
         _buildText('대여료: $price'),
-        _buildText('대여가능일자: $period'),
-        _buildText('카테고리: $category'),
+        _buildText('대여 가능 기간: $period'),
+        _buildText('카테고리: ${categories.join(", ")}'),
       ],
     );
   }
 
-  /// 텍스트 스타일을 적용한 텍스트를 반환하는 함수
+  /// 텍스트 스타일 적용
   Widget _buildText(String text, {FontWeight fontWeight = FontWeight.normal}) {
     return Text(
       text,
