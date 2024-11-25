@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../service/recent_view_item_service.dart';
+import '../../../utils/show_error_dialog.dart';
 import 'recently_view_item.dart';
 
 /// 최근 본 물품 목록 위젯
@@ -15,6 +16,8 @@ class _RecentlyViewedListWidgetState extends State<RecentlyViewedListWidget> {
   final RecentViewItemService _recentViewItemService = RecentViewItemService();
   late Future<List<Map<String, dynamic>>> _recentItems;
 
+  bool _hasShownErrorDialog = false; // 오류 다이얼로그가 이미 표시되었는지 확인
+
   @override
   void initState() {
     super.initState();
@@ -29,6 +32,13 @@ class _RecentlyViewedListWidgetState extends State<RecentlyViewedListWidget> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
+          // 오류가 발생했을 때만 다이얼로그 표시
+          if (!_hasShownErrorDialog) {
+            _hasShownErrorDialog = true; // 다이얼로그를 한 번만 띄우도록 설정
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              showErrorDialog(context, snapshot.error.toString());
+            });
+          }
           return Center(child: Text('오류 발생: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(child: Text('최근 본 물품이 없습니다.'));

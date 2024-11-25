@@ -14,7 +14,7 @@ void showErrorDialog(BuildContext context, String errorMessage) {
           '오류 발생',
           style: TextStyle(
             color: Colors.black, // 검정색 텍스트
-            fontSize: 24,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
             fontFamily: 'BM Dohyeon', // 배민 폰트 사용
           ),
