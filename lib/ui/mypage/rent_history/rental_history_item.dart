@@ -76,21 +76,33 @@ class RentalHistoryItemWidget extends StatelessWidget {
     String displayText;
 
     switch (status) {
-      case '반납완료':
-        badgeColor = Color(0xFF079702).withOpacity(0.95);
-        displayText = '반납완료';
+      case 'REQUEST':
+        badgeColor = Colors.blue; // 대여 요청: 파란색
+        displayText = '대여 요청';
         break;
-      case '대여중':
-        badgeColor = Colors.orange;
-        displayText = '대여중';
+      case 'ACCEPT':
+        badgeColor = Colors.green; // 대여 승인: 초록색
+        displayText = '대여 승인';
         break;
-      case '연체중':
-        badgeColor = Colors.red;
-        displayText = '연체중';
+      case 'RENT_PROCESS':
+        badgeColor = Colors.orange; // 대여 진행: 주황색
+        displayText = '대여 진행';
+        break;
+      case 'RETURN_ACCEPT':
+        badgeColor = Color(0xFF079702).withOpacity(0.95); // 반납 승인: 짙은 초록색
+        displayText = '반납 승인';
+        break;
+      case 'OVERDUE':
+        badgeColor = Colors.red; // 연체 중: 빨간색
+        displayText = '연체 중';
+        break;
+      case 'NOTICE':
+        badgeColor = Colors.purple; // 공지 사항: 보라색
+        displayText = '공지 사항';
         break;
       default:
-        badgeColor = Colors.grey;
-        displayText = '상태 없음';
+        badgeColor = Colors.grey; // 알 수 없는 상태
+        displayText = '알 수 없는 상태';
     }
 
     return Container(

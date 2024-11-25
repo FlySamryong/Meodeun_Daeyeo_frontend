@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import '../../service/member/member_service.dart';
 import '../item/detail/item_detail_page.dart';
 
 /// 즐겨찾기한 물품 목록 위젯
 class FavoriteItemListWidget extends StatelessWidget {
   final SizingInformation sizingInformation;
+  final MemberService _memberService = MemberService(); // MemberService 인스턴스 생성
 
-  const FavoriteItemListWidget({super.key, required this.sizingInformation});
+  FavoriteItemListWidget({super.key, required this.sizingInformation});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: _fetchItemList(),
+    return FutureBuilder<List<dynamic>>(
+      future: _fetchItemList(context), // API 데이터를 가져오는 메서드
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -35,21 +37,9 @@ class FavoriteItemListWidget extends StatelessWidget {
     );
   }
 
-  /// 임시 데이터를 반환하는 메서드, 추후 API 연동으로 대체 필요
-  Future<List<Map<String, dynamic>>> _fetchItemList() async {
-    await Future.delayed(const Duration(seconds: 1));
-
-    // 임시 데이터 목록 생성
-    return List.generate(10, (index) {
-      return {
-        'title': '아이템 제목 $index',
-        'location': '서울',
-        'rental_price': '${(index + 1) * 1000}원',
-        'deposit': '${(index + 1) * 5000}원',
-        'available': index % 2 == 0 ? '대여 가능' : '대여중',
-        'image': null,
-      };
-    });
+  /// API를 통해 관심 아이템 목록을 가져오는 메서드
+  Future<List<dynamic>> _fetchItemList(BuildContext context) async {
+    return await _memberService.fetchFavoriteItems(context);
   }
 
   /// 아이템 상세 페이지로 네비게이션
@@ -59,7 +49,7 @@ class FavoriteItemListWidget extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => ItemDetailScreen(
           sizingInformation: sizingInformation,
-          itemId: item['id'],
+          itemId: item['id'], // API 데이터에서 id를 넘김
         ),
       ),
     );
@@ -73,12 +63,20 @@ class FavoriteItemListWidget extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(10),
         decoration: _cardDecoration(),
-        child: Row(
+        child: Stack(
           children: [
-            _buildItemImage(),
-            const SizedBox(width: 20),
-            _buildItemInfo(item),
-            _buildItemAvailability(item['available']),
+            Row(
+              children: [
+                _buildItemImage(item['imageUrl']),
+                const SizedBox(width: 20),
+                _buildItemInfo(item),
+              ],
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: _buildItemAvailability(item['status']),
+            ),
           ],
         ),
       ),
@@ -101,7 +99,7 @@ class FavoriteItemListWidget extends StatelessWidget {
   }
 
   /// 아이템 이미지 빌드
-  Widget _buildItemImage() {
+  Widget _buildItemImage(String? imageUrl) {
     return Container(
       width: 110,
       height: 110,
@@ -109,7 +107,15 @@ class FavoriteItemListWidget extends StatelessWidget {
         color: Colors.grey.shade300,
         borderRadius: BorderRadius.circular(5),
       ),
-      child: const Center(child: Text('물품 사진')),
+      child: imageUrl != null
+          ? ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+              ),
+            )
+          : const Center(child: Text('물품 사진')),
     );
   }
 
@@ -119,13 +125,14 @@ class FavoriteItemListWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildItemTitle(item['title']),
+          _buildItemTitle(item['name']), // 아이템 제목
           const SizedBox(height: 5),
-          _buildItemDetail('대여 장소:', item['location']),
+          _buildItemDetail('대여 장소:',
+              '${item['location']['city']} ${item['location']['district']}'),
           const SizedBox(height: 5),
-          _buildItemDetail('1일 대여료:', item['rental_price']),
+          _buildItemDetail('1일 대여료:', '${item['fee']}원'),
           const SizedBox(height: 5),
-          _buildItemDetail('보증금:', item['deposit']),
+          _buildItemDetail('보증금:', '${item['deposit']}원'),
         ],
       ),
     );
@@ -152,11 +159,14 @@ class FavoriteItemListWidget extends StatelessWidget {
   }
 
   /// 아이템 대여 가능 여부 빌드
-  Widget _buildItemAvailability(String availability) {
+  Widget _buildItemAvailability(String status) {
+    String availability = (status == 'RENTED') ? '대여 불가' : '대여 가능';
+    Color badgeColor = (status == 'RENTED') ? Colors.orange : Colors.green;
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       decoration: BoxDecoration(
-        color: availability == '대여 가능' ? Colors.green : Colors.orange,
+        color: badgeColor,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
