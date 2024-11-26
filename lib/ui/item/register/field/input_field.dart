@@ -7,6 +7,7 @@ class InputFieldWidget extends StatelessWidget {
   final TextEditingController? controller; // 컨트롤러 추가
   final TextInputType? keyboardType; // 키보드 타입 추가
   final Function(String)? onValueChanged; // 값 변경 콜백 추가
+  final String? hintText; // hintText 추가
 
   const InputFieldWidget({
     required this.labelText,
@@ -14,6 +15,7 @@ class InputFieldWidget extends StatelessWidget {
     this.controller,
     this.keyboardType,
     this.onValueChanged,
+    this.hintText, // hintText 받기
     super.key,
   });
 
@@ -51,6 +53,12 @@ class InputFieldWidget extends StatelessWidget {
   InputDecoration _buildInputDecoration() {
     return InputDecoration(
       labelText: labelText,
+      hintText: hintText, // hintText 적용
+      hintStyle: TextStyle(
+        fontFamily: 'BM Dohyeon',
+        color: Colors.grey, // 연한 회색으로 표시
+        fontSize: 12 * scaleWidth,
+      ),
       labelStyle: TextStyle(
         fontFamily: 'BM Dohyeon',
         color: Colors.black,

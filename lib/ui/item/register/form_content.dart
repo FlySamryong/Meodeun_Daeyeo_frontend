@@ -48,21 +48,21 @@ class _FormContentWidgetState extends State<FormContentWidget> {
             const SizedBox(height: 15),
             _buildPhotoUploadBox(),
             const SizedBox(height: 15),
-            _buildInputField('물품명', nameController),
+            _buildInputField('물품명', nameController, hintText: '예: 캠핑 의자'),
             const SizedBox(height: 10),
-            _buildInputField('도시', cityController),
+            _buildInputField('도시', cityController, hintText: '예: 서울'),
             const SizedBox(height: 10),
-            _buildInputField('구', districtController),
+            _buildInputField('구', districtController, hintText: '예: 강남구'),
             const SizedBox(height: 10),
-            _buildInputField('동', neighborhoodController),
+            _buildInputField('동', neighborhoodController, hintText: '예: 역삼동'),
             const SizedBox(height: 10),
-            _buildInputField('1일 대여료', feeController, isNumber: true),
+            _buildInputField('1일 대여료', feeController, isNumber: true, hintText: '예: 10000'),
             const SizedBox(height: 10),
-            _buildInputField('보증금', depositController, isNumber: true),
+            _buildInputField('보증금', depositController, isNumber: true, hintText: '예: 50000'),
             const SizedBox(height: 10),
-            _buildInputField('대여 가능 기간', periodController, isNumber: true),
+            _buildInputField('대여 가능 기간', periodController, isNumber: true, hintText: '예: 7'),
             const SizedBox(height: 10),
-            _buildInputField('물품 카테고리', null, isCategory: true),
+            _buildInputField('물품 카테고리', null, isCategory: true, hintText: '예: 캠핑, 가구'),
             const SizedBox(height: 20),
             _buildDescriptionField(),
             const SizedBox(height: 20),
@@ -135,8 +135,13 @@ class _FormContentWidgetState extends State<FormContentWidget> {
     );
   }
 
-  Widget _buildInputField(String labelText, TextEditingController? controller,
-      {bool isNumber = false, bool isCategory = false}) {
+  Widget _buildInputField(
+      String labelText,
+      TextEditingController? controller, {
+        bool isNumber = false,
+        bool isCategory = false,
+        String? hintText, // hintText 추가
+      }) {
     if (isCategory) {
       return InputFieldWidget(
         labelText: labelText,
@@ -148,6 +153,7 @@ class _FormContentWidgetState extends State<FormContentWidget> {
             }
           });
         },
+        hintText: hintText, // hintText 전달
       );
     }
     return InputFieldWidget(
@@ -155,6 +161,7 @@ class _FormContentWidgetState extends State<FormContentWidget> {
       scaleWidth: widget.scaleWidth,
       controller: controller,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      hintText: hintText, // hintText 전달
     );
   }
 
