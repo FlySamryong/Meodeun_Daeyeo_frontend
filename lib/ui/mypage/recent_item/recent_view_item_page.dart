@@ -53,8 +53,8 @@ class RecentlyViewedPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              RecentlyViewedListWidget(),
+            children: [
+              RecentlyViewedListWidget(sizingInformation: sizingInformation),
               SizedBox(height: 20),
             ],
           ),
