@@ -125,21 +125,31 @@ class ApiClient {
 
   /// HTTP 요청 전송 메서드 (POST, GET 등)
   Future<http.Response> _sendRequest(
-    Uri url,
-    String accessToken,
-    String method, {
-    Map<String, dynamic>? body,
-  }) async {
+      Uri url,
+      String accessToken,
+      String method, {
+        Map<String, dynamic>? body,
+      }) async {
     final headers = {
       'Authorization': 'Bearer $accessToken',
       'Content-Type': 'application/json',
     };
-
-    if (method == 'POST') {
-      return await http.post(url, headers: headers, body: jsonEncode(body));
-    } else {
-      return await http.get(url, headers: headers);
+  //로그 추가
+    print('[HTTP REQUEST] $method $url');
+    print('[HEADERS] $headers');
+    if (body != null) {
+      print('[BODY] $body');
     }
+
+    late http.Response response;
+    if (method == 'POST') {
+      response = await http.post(url, headers: headers, body: jsonEncode(body));
+    } else {
+      response = await http.get(url, headers: headers);
+    }
+
+    print('[HTTP RESPONSE] ${response.statusCode} ${response.body}');
+    return response;
   }
 
   /// 토큰 만료 확인 메서드

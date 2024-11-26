@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 
-/// 프로필 섹션 위젯
+import '../../../service/mypage/mypage_service.dart';
+
 class ProfileSectionWidget extends StatelessWidget {
-  const ProfileSectionWidget({super.key});
+  final String nickname;
+  final String email;
+  final double mannerRate;
+  final Location location;
+
+  const ProfileSectionWidget({
+    super.key,
+    required this.nickname,
+    required this.email,
+    required this.mannerRate,
+    required this.location,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +34,29 @@ class ProfileSectionWidget extends StatelessWidget {
     );
   }
 
-  /// 컨테이너의 장식 스타일 반환 함수
+  Widget _buildProfileDetails() {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildProfileDetailText('닉네임: $nickname', fontWeight: FontWeight.bold),
+          _buildProfileDetailText('이메일: $email'),
+          _buildProfileDetailText('등록자 별점: $mannerRate / 5'),
+          _buildProfileDetailText(
+              '거주지: ${location.city}, ${location.district}, ${location.neighborhood}'),
+        ],
+      ),
+    );
+  }
+
+  static Widget _buildProfileDetailText(String text,
+      {FontWeight fontWeight = FontWeight.normal}) {
+    return Text(
+      text,
+      style: TextStyle(fontSize: 13, fontWeight: fontWeight),
+    );
+  }
+
   BoxDecoration _buildContainerDecoration() {
     return BoxDecoration(
       border: Border.all(
@@ -33,7 +67,6 @@ class ProfileSectionWidget extends StatelessWidget {
     );
   }
 
-  /// 프로필 이미지 반환 함수
   Widget _buildProfileImage() {
     return Container(
       width: 80,
@@ -44,39 +77,6 @@ class ProfileSectionWidget extends StatelessWidget {
       ),
       child: const Center(
         child: Text('프로필', style: TextStyle(color: Colors.black54)),
-      ),
-    );
-  }
-
-  /// 프로필 세부 사항 반환 함수
-  Widget _buildProfileDetails() {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildProfileDetailText('닉네임: 홍길동', fontWeight: FontWeight.bold),
-          SizedBox(height: 5),
-          _buildProfileDetailText('이메일: example@example.com'),
-          SizedBox(height: 5),
-          _buildProfileDetailText('등록자 별점 후기: 3.5 / 5'),
-          SizedBox(height: 5),
-          _buildProfileDetailText('계좌번호: 123-456-789'),
-          SizedBox(height: 5),
-          _buildProfileDetailText('거주지: 서울시 강남구'),
-        ],
-      ),
-    );
-  }
-
-  /// 프로필 세부 사항 텍스트 스타일을 반환하는 함수
-  static Widget _buildProfileDetailText(String text,
-      {FontWeight fontWeight = FontWeight.w100}) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: 13,
-        fontWeight: fontWeight,
-        fontFamily: 'BM Dohyeon',
       ),
     );
   }
