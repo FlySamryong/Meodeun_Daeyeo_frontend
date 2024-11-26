@@ -199,7 +199,7 @@ class _ChatPageState extends State<ChatPage> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              ChatAppBar(title: widget.title),
+              ChatAppBar(title: widget.title, roomId: widget.roomId),
               const SizedBox(height: 10),
               Expanded(
                 child: ChatMessageList(

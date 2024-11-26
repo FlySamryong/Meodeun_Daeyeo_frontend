@@ -87,6 +87,8 @@ class _MessageInputFieldState extends State<MessageInputField> {
                 hintText: '메시지를 입력하세요',
                 border: InputBorder.none,
               ),
+              textInputAction: TextInputAction.send, // 엔터 버튼을 전송 버튼으로 변경
+              onSubmitted: (value) => _handleSendMessage(), // 엔터 눌렀을 때 전송
             ),
           ),
           IconButton(
@@ -96,6 +98,13 @@ class _MessageInputFieldState extends State<MessageInputField> {
         ],
       ),
     );
+  }
+
+  /// 메시지 전송 핸들러
+  void _handleSendMessage() {
+    if (widget.messageController.text.trim().isNotEmpty) {
+      widget.onSendMessage();
+    }
   }
 
   /// 입력 필드 스타일링
@@ -178,7 +187,8 @@ class _MessageInputFieldState extends State<MessageInputField> {
   }
 
   /// rentId가 필요한 작업 실행
-  Future<void> _executeWithRentId({required Future<void> Function() action}) async {
+  Future<void> _executeWithRentId(
+      {required Future<void> Function() action}) async {
     if (widget.rentId == null) {
       showErrorDialog(context, "대여가 생성되지 않았습니다.");
     } else {
