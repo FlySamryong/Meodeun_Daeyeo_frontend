@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import '../../../service/member/member_service.dart';
 import '../../../utils/show_error_dialog.dart';
+import '../../item/detail/item_detail_page.dart';
 import 'recently_view_item.dart';
 
 /// 최근 본 물품 목록 위젯
 class RecentlyViewedListWidget extends StatefulWidget {
-  const RecentlyViewedListWidget({super.key});
+  final SizingInformation sizingInformation;
+
+  const RecentlyViewedListWidget({super.key, required this.sizingInformation});
 
   @override
   State<RecentlyViewedListWidget> createState() =>
@@ -34,7 +38,7 @@ class _RecentlyViewedListWidgetState extends State<RecentlyViewedListWidget> {
         } else if (snapshot.hasError) {
           // 오류가 발생했을 때만 다이얼로그 표시
           if (!_hasShownErrorDialog) {
-            _hasShownErrorDialog = true; // 다이얼로그를 한 번만 띄우도록 설정
+            _hasShownErrorDialog = true;
             WidgetsBinding.instance.addPostFrameCallback((_) {
               showErrorDialog(context, snapshot.error.toString());
             });
@@ -53,8 +57,20 @@ class _RecentlyViewedListWidgetState extends State<RecentlyViewedListWidget> {
               return RecentlyViewedItemWidget(
                 title: item['name'],
                 price: '${item['fee']}원',
-                period: '정보 없음', // 데이터에 없는 경우 기본값
+                location:
+                    '${item['location']['city']} ${item['location']['district']} ${item['location']['neighborhood']}',
                 categories: _extractCategories(item['categoryList']),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ItemDetailScreen(
+                        sizingInformation: widget.sizingInformation,
+                        itemId: item['itemId'], // 전달할 itemId
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );

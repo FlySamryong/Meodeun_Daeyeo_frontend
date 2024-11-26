@@ -4,34 +4,39 @@ import 'package:flutter/material.dart';
 class RecentlyViewedItemWidget extends StatelessWidget {
   final String title;
   final String price;
-  final String period;
+  final String location;
   final List<String> categories;
+  final VoidCallback onTap;
 
   const RecentlyViewedItemWidget({
     required this.title,
     required this.price,
-    required this.period,
+    required this.location,
     required this.categories,
+    required this.onTap,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: _buildBoxDecoration(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildItemDetails(),
-            const Icon(
-              Icons.arrow_forward_ios,
-              color: Color(0xFF079702),
-              size: 18,
-            ),
-          ],
+    return GestureDetector(
+      onTap: onTap, // 클릭 시 동작 연결
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: _buildBoxDecoration(),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildItemDetails(),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: Color(0xFF079702),
+                size: 18,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -60,7 +65,7 @@ class RecentlyViewedItemWidget extends StatelessWidget {
         _buildText(title, fontWeight: FontWeight.bold),
         const SizedBox(height: 5),
         _buildText('대여료: $price'),
-        _buildText('대여 가능 기간: $period'),
+        _buildText('거래 장소: $location'),
         _buildText('카테고리: ${categories.join(", ")}'),
       ],
     );
