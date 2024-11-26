@@ -25,13 +25,16 @@ class FormContentWidget extends StatefulWidget {
 class _FormContentWidgetState extends State<FormContentWidget> {
   // 입력 필드 컨트롤러
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController cityController = TextEditingController();
-  final TextEditingController districtController = TextEditingController();
   final TextEditingController neighborhoodController = TextEditingController();
   final TextEditingController feeController = TextEditingController();
   final TextEditingController depositController = TextEditingController();
   final TextEditingController periodController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+
+  // 위치 정보
+  final TextEditingController provinceController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController districtController = TextEditingController();
 
   // 추가 상태
   final List<String> categories = [];
@@ -50,11 +53,7 @@ class _FormContentWidgetState extends State<FormContentWidget> {
             const SizedBox(height: 15),
             _buildInputField('물품명', nameController, hintText: '예: 캠핑 의자'),
             const SizedBox(height: 10),
-            _buildInputField('도시', cityController, hintText: '예: 서울'),
-            const SizedBox(height: 10),
-            _buildInputField('구', districtController, hintText: '예: 강남구'),
-            const SizedBox(height: 10),
-            _buildInputField('동', neighborhoodController, hintText: '예: 역삼동'),
+            _buildLocationInputRow(),
             const SizedBox(height: 10),
             _buildInputField('1일 대여료', feeController, isNumber: true, hintText: '예: 10000'),
             const SizedBox(height: 10),
@@ -134,6 +133,24 @@ class _FormContentWidgetState extends State<FormContentWidget> {
       },
     );
   }
+  Widget _buildLocationInputRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: _buildInputField('도', provinceController, hintText: '예: 서울'),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _buildInputField('시', cityController, hintText: '예: 강남구'),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _buildInputField('구', districtController, hintText: '예: 역삼동'),
+        ),
+      ],
+    );
+  }
 
   Widget _buildInputField(
       String labelText,
@@ -188,13 +205,12 @@ class _FormContentWidgetState extends State<FormContentWidget> {
     }
 
     final locationDTO = {
+      'province': provinceController.text.trim(),
       'city': cityController.text.trim(),
       'district': districtController.text.trim(),
-      'neighborhood': neighborhoodController.text.trim(),
     };
 
     final categoryList = categories.map((name) => {'name': name}).toList();
-
     final formData = {
       'name': nameController.text.trim(),
       'description': descriptionController.text.trim(),
