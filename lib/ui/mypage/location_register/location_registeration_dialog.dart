@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../../../service/api_client.dart';
+import '../../../utils/show_error_dialog.dart';
 
 /// 거주지 등록 다이얼로그
 class LocationRegistrationDialog extends StatefulWidget {
@@ -16,15 +19,16 @@ class LocationRegistrationDialog extends StatefulWidget {
 
 class _LocationRegistrationDialogState
     extends State<LocationRegistrationDialog> {
+  final ApiClient _apiClient = ApiClient(); // ApiClient 인스턴스 생성
   final Color primaryColor = const Color(0xFF079702).withOpacity(0.95); // 초록색
 
   // 드롭다운 선택 값 초기화
-  String selectedCity = "서울특별시";
+  String selectedCity = "서울시";
   String selectedDistrict = "강남구";
   String selectedNeighborhood = "삼성동";
 
   /// 드롭다운 데이터
-  final List<String> cities = ["서울특별시", "부산광역시", "대구광역시"];
+  final List<String> cities = ["서울시", "부산시", "대구시"];
   final List<String> districts = ["강남구", "중구", "서초구"];
   final List<String> neighborhoods = ["삼성동", "역삼동", "논현동"];
 
@@ -62,16 +66,15 @@ class _LocationRegistrationDialogState
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.white,
-      // 다이얼로그 배경색
       contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
       title: const Text(
         "거주지 등록",
         style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       ),
       content: SizedBox(
-        width: 400, // 다이얼로그 가로 크기
+        width: 400,
         child: Column(
-          mainAxisSize: MainAxisSize.min, // 내용 크기에 맞게 다이얼로그 크기 조정
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
@@ -79,7 +82,6 @@ class _LocationRegistrationDialogState
               style: TextStyle(color: Colors.black),
             ),
             const SizedBox(height: 10),
-            // 도 선택 드롭다운
             DropdownButtonFormField<String>(
               value: selectedCity,
               items: cities
@@ -93,10 +95,9 @@ class _LocationRegistrationDialogState
               decoration: _buildInputDecoration(hintText: '', labelText: '도 선택'),
               dropdownColor: Colors.white,
               style: const TextStyle(color: Colors.black),
-              iconEnabledColor: primaryColor, // 드롭다운 아이콘 색상
+              iconEnabledColor: primaryColor,
             ),
             const SizedBox(height: 10),
-            // 시 선택 드롭다운
             DropdownButtonFormField<String>(
               value: selectedDistrict,
               items: districts
@@ -114,7 +115,6 @@ class _LocationRegistrationDialogState
               iconEnabledColor: primaryColor,
             ),
             const SizedBox(height: 10),
-            // 동 선택 드롭다운
             DropdownButtonFormField<String>(
               value: selectedNeighborhood,
               items: neighborhoods
@@ -131,6 +131,7 @@ class _LocationRegistrationDialogState
               style: const TextStyle(color: Colors.black),
               iconEnabledColor: primaryColor,
             ),
+
           ],
         ),
       ),
@@ -138,9 +139,8 @@ class _LocationRegistrationDialogState
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            // 취소 버튼
             SizedBox(
-              width: 100, // 버튼 가로 크기
+              width: 100,
               child: TextButton(
                 onPressed: () => Navigator.pop(context),
                 style: TextButton.styleFrom(
@@ -150,8 +150,7 @@ class _LocationRegistrationDialogState
                 child: const Text("취소"),
               ),
             ),
-            const SizedBox(width: 10), // 버튼 간격
-            // 확인 버튼
+            const SizedBox(width: 10),
             SizedBox(
               width: 100,
               child: ElevatedButton(
@@ -166,17 +165,35 @@ class _LocationRegistrationDialogState
     );
   }
 
-  /// 확인 버튼 클릭 시 실행될 함수
-  void _handleConfirmButtonPressed() {
+  /// 확인 버튼 클릭 시 서버에 POST 요청
+  Future<void> _handleConfirmButtonPressed() async {
     final selectedLocation = {
       "city": selectedCity,
       "district": selectedDistrict,
       "neighborhood": selectedNeighborhood,
     };
 
-    // 예시: 콘솔에 출력
-    print("선택된 거주지: $selectedLocation");
+    try {
+      // 서버로 POST 요청
+      final response = await _apiClient.post(
+        endpoint: 'member/register/location',
+        body: selectedLocation,
+        context: context,
+      );
 
-    Navigator.pop(context, selectedLocation); // 선택된 데이터를 반환하고 다이얼로그 닫기
+      if (response.statusCode == 200) {
+        // 성공 메시지 처리
+        Navigator.pop(context, selectedLocation);
+        print("거주지 등록 성공: ${response.body}");
+      } else {
+        // 오류 메시지 처리 (UTF-8 디코딩 추가)
+        final responseBody = utf8.decode(response.bodyBytes); // 디코딩
+        final errorMessage = jsonDecode(responseBody)['message'] ?? "등록 실패";
+        showErrorDialog(context, errorMessage);
+      }
+    } catch (e) {
+      // 예외 처리
+      showErrorDialog(context, "네트워크 오류가 발생했습니다.");
+    }
   }
 }
