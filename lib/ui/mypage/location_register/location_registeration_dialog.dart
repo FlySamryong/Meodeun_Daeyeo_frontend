@@ -22,15 +22,35 @@ class _LocationRegistrationDialogState
   final ApiClient _apiClient = ApiClient(); // ApiClient 인스턴스 생성
   final Color primaryColor = const Color(0xFF079702).withOpacity(0.95); // 초록색
 
-  // 드롭다운 선택 값 초기화
-  String selectedCity = "서울시";
-  String selectedDistrict = "강남구";
-  String selectedNeighborhood = "삼성동";
+  // 드롭다운 데이터
+  final Map<String, Map<String, List<String>>> _locations = {
+    "서울시": {
+      "강남구": ["역삼동", "청담동"],
+      "서초구": ["반포동", "잠원동"],
+    },
+    "부산시": {
+      "해운대구": ["우동", "중동"],
+      "수영구": ["광안동", "남천동"],
+    },
+    "대구시": {
+      "달서구": ["이곡동", "신당동"],
+      "북구": ["산격동", "복현동"],
+    },
+  };
 
-  /// 드롭다운 데이터
-  final List<String> cities = ["서울시", "부산시", "대구시"];
-  final List<String> districts = ["강남구", "중구", "서초구"];
-  final List<String> neighborhoods = ["삼성동", "역삼동", "논현동"];
+  String? selectedCity; // 선택된 도시
+  String? selectedDistrict; // 선택된 구
+  String? selectedNeighborhood; // 선택된 동
+
+  List<String> get cityList => _locations.keys.toList();
+
+  List<String> get districtList =>
+      selectedCity != null ? _locations[selectedCity!]!.keys.toList() : [];
+
+  List<String> get neighborhoodList =>
+      selectedCity != null && selectedDistrict != null
+          ? _locations[selectedCity!]![selectedDistrict!] ?? []
+          : [];
 
   /// 공통 InputDecoration 스타일 함수
   InputDecoration _buildInputDecoration({
@@ -82,56 +102,65 @@ class _LocationRegistrationDialogState
               style: TextStyle(color: Colors.black),
             ),
             const SizedBox(height: 10),
+            // 도시 선택 드롭다운
             DropdownButtonFormField<String>(
               value: selectedCity,
-              items: cities
-                  .map((city) => DropdownMenuItem(value: city, child: Text(city)))
+              items: cityList
+                  .map((city) =>
+                      DropdownMenuItem(value: city, child: Text(city)))
                   .toList(),
               onChanged: (value) {
                 setState(() {
-                  selectedCity = value!;
+                  selectedCity = value;
+                  selectedDistrict = null;
+                  selectedNeighborhood = null; // 초기화
                 });
               },
-              decoration: _buildInputDecoration(hintText: '', labelText: '도 선택'),
+              decoration:
+                  _buildInputDecoration(hintText: '', labelText: '도시 선택'),
               dropdownColor: Colors.white,
               style: const TextStyle(color: Colors.black),
               iconEnabledColor: primaryColor,
             ),
             const SizedBox(height: 10),
+            // 구 선택 드롭다운
             DropdownButtonFormField<String>(
               value: selectedDistrict,
-              items: districts
+              items: districtList
                   .map((district) =>
-                  DropdownMenuItem(value: district, child: Text(district)))
+                      DropdownMenuItem(value: district, child: Text(district)))
                   .toList(),
               onChanged: (value) {
                 setState(() {
-                  selectedDistrict = value!;
+                  selectedDistrict = value;
+                  selectedNeighborhood = null; // 초기화
                 });
               },
-              decoration: _buildInputDecoration(hintText: '', labelText: '시 선택'),
+              decoration:
+                  _buildInputDecoration(hintText: '', labelText: '구 선택'),
               dropdownColor: Colors.white,
               style: const TextStyle(color: Colors.black),
               iconEnabledColor: primaryColor,
             ),
             const SizedBox(height: 10),
+            // 동 선택 드롭다운
             DropdownButtonFormField<String>(
               value: selectedNeighborhood,
-              items: neighborhoods
+              items: neighborhoodList
                   .map((neighborhood) => DropdownMenuItem(
-                  value: neighborhood, child: Text(neighborhood)))
+                      value: neighborhood, child: Text(neighborhood)))
                   .toList(),
               onChanged: (value) {
                 setState(() {
-                  selectedNeighborhood = value!;
+                  selectedNeighborhood = value;
                 });
               },
-              decoration: _buildInputDecoration(hintText: '', labelText: '동 선택'),
+              decoration:
+                  _buildInputDecoration(hintText: '', labelText: '동 선택'),
               dropdownColor: Colors.white,
               style: const TextStyle(color: Colors.black),
               iconEnabledColor: primaryColor,
             ),
-
           ],
         ),
       ),
@@ -167,10 +196,17 @@ class _LocationRegistrationDialogState
 
   /// 확인 버튼 클릭 시 서버에 POST 요청
   Future<void> _handleConfirmButtonPressed() async {
+    if (selectedCity == null ||
+        selectedDistrict == null ||
+        selectedNeighborhood == null) {
+      showErrorDialog(context, "모든 항목을 선택해주세요.");
+      return;
+    }
+
     final selectedLocation = {
-      "city": selectedCity,
-      "district": selectedDistrict,
-      "neighborhood": selectedNeighborhood,
+      "city": selectedCity!,
+      "district": selectedDistrict!,
+      "neighborhood": selectedNeighborhood!,
     };
 
     try {
@@ -182,17 +218,13 @@ class _LocationRegistrationDialogState
       );
 
       if (response.statusCode == 200) {
-        // 성공 메시지 처리
-        Navigator.pop(context, selectedLocation);
-        print("거주지 등록 성공: ${response.body}");
+        Navigator.pop(context, selectedLocation); // 성공 시 선택한 데이터를 반환
       } else {
-        // 오류 메시지 처리 (UTF-8 디코딩 추가)
         final responseBody = utf8.decode(response.bodyBytes); // 디코딩
         final errorMessage = jsonDecode(responseBody)['message'] ?? "등록 실패";
         showErrorDialog(context, errorMessage);
       }
     } catch (e) {
-      // 예외 처리
       showErrorDialog(context, "네트워크 오류가 발생했습니다.");
     }
   }
