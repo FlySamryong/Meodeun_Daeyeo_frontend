@@ -46,13 +46,20 @@ class ProfileSectionWidget extends StatelessWidget {
           _buildProfileDetailText('닉네임: $nickName',
               fontWeight: FontWeight.bold),
           _buildProfileDetailText('이메일: $email'),
-          _buildProfileDetailText('등록자 별점: $mannerRate / 5'),
+          _buildProfileDetailText(_getMannerRateText()),
           _buildProfileDetailText(
               '거주지: ${location.city} ${location.district} ${location.neighborhood}'),
           _buildProfileDetailText('계좌번호: $accountNum'),
         ],
       ),
     );
+  }
+
+  /// 평점 텍스트 표시 함수
+  String _getMannerRateText() {
+    return mannerRate == 0
+        ? '등록자 별점: 측정중이에요'
+        : '등록자 별점: $mannerRate / 5';
   }
 
   static Widget _buildProfileDetailText(String text,
@@ -81,16 +88,16 @@ class ProfileSectionWidget extends StatelessWidget {
         shape: BoxShape.circle,
         image: profileImage.isNotEmpty
             ? DecorationImage(
-                image: NetworkImage(profileImage),
-                fit: BoxFit.cover,
-              )
+          image: NetworkImage(profileImage),
+          fit: BoxFit.cover,
+        )
             : null,
         color: profileImage.isEmpty ? Colors.grey.shade300 : null,
       ),
       child: profileImage.isEmpty
           ? const Center(
-              child: Text('프로필', style: TextStyle(color: Colors.black54)),
-            )
+        child: Text('프로필', style: TextStyle(color: Colors.black54)),
+      )
           : null,
     );
   }
