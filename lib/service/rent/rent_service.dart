@@ -54,7 +54,8 @@ class RentService {
     required int rentId,
     required String endDate,
   }) async {
-    final endpoint = 'rent/accept?roomId=$roomId&rentId=$rentId&endDate=$endDate';
+    final endpoint =
+        'rent/accept?roomId=$roomId&rentId=$rentId&endDate=$endDate';
     await _sendGetRequest(
       context: context,
       endpoint: endpoint,
