@@ -134,12 +134,6 @@ class ApiClient {
       'Authorization': 'Bearer $accessToken',
       'Content-Type': 'application/json',
     };
-    //로그 추가
-    print('[HTTP REQUEST] $method $url');
-    print('[HEADERS] $headers');
-    if (body != null) {
-      print('[BODY] $body');
-    }
 
     late http.Response response;
     if (method == 'POST') {
@@ -148,7 +142,6 @@ class ApiClient {
       response = await http.get(url, headers: headers);
     }
 
-    print('[HTTP RESPONSE] ${response.statusCode} ${response.body}');
     return response;
   }
 
