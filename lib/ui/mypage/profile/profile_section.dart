@@ -3,17 +3,21 @@ import 'package:flutter/material.dart';
 import '../../../service/mypage/mypage_service.dart';
 
 class ProfileSectionWidget extends StatelessWidget {
-  final String nickname;
+  final String nickName;
   final String email;
   final double mannerRate;
   final Location location;
+  final String profileImage;
+  final String accountNum;
 
   const ProfileSectionWidget({
     super.key,
-    required this.nickname,
+    required this.nickName,
     required this.email,
     required this.mannerRate,
     required this.location,
+    required this.profileImage,
+    required this.accountNum,
   });
 
   @override
@@ -39,11 +43,12 @@ class ProfileSectionWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildProfileDetailText('닉네임: $nickname', fontWeight: FontWeight.bold),
+          _buildProfileDetailText('닉네임: $nickName', fontWeight: FontWeight.bold),
           _buildProfileDetailText('이메일: $email'),
           _buildProfileDetailText('등록자 별점: $mannerRate / 5'),
           _buildProfileDetailText(
               '거주지: ${location.city}, ${location.district}, ${location.neighborhood}'),
+          _buildProfileDetailText('계좌번호: $accountNum'),
         ],
       ),
     );
@@ -72,12 +77,20 @@ class ProfileSectionWidget extends StatelessWidget {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: Colors.grey.shade300,
         shape: BoxShape.circle,
+        image: profileImage.isNotEmpty
+            ? DecorationImage(
+          image: NetworkImage(profileImage),
+          fit: BoxFit.cover,
+        )
+            : null,
+        color: profileImage.isEmpty ? Colors.grey.shade300 : null,
       ),
-      child: const Center(
+      child: profileImage.isEmpty
+          ? const Center(
         child: Text('프로필', style: TextStyle(color: Colors.black54)),
-      ),
+      )
+          : null,
     );
   }
 }

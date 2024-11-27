@@ -7,7 +7,6 @@ import '../../../action/mypage_nav_action.dart';
 import '../../../service/mypage/mypage_service.dart';
 import '../../app_title.dart';
 import '../../bottom_nav_bar.dart';
-import '../accout_register/account_registeration_dialog.dart';
 import '../section.dart';
 import 'profile_section.dart';
 import '../recent_item/recent_view_item_page.dart';
@@ -67,10 +66,14 @@ class _MyPageState extends State<MyPage> {
                         children: [
                           const SizedBox(height: 20),
                           ProfileSectionWidget(
-                            nickname: data.nickname,
+                            nickName: data.nickName,
                             email: data.email,
                             mannerRate: data.mannerRate,
                             location: data.location,
+                            profileImage: data.profileImage,
+                            accountNum: data.accountList.isNotEmpty
+                                ? data.accountList.first.accountNum
+                                : '없음',
                           ),
                           const SizedBox(height: 30),
                           _buildSection(
@@ -85,6 +88,20 @@ class _MyPageState extends State<MyPage> {
                             '최근 조회한 물품 목록',
                             Icons.arrow_forward,
                                 () => _navigateToPage<RecentlyViewedPage>(context),
+                          ),
+                          const SizedBox(height: 30),
+                          _buildSection(
+                            context,
+                            '고객센터',
+                            Icons.arrow_forward,
+                                () => {}, // 추가된 섹션
+                          ),
+                          const SizedBox(height: 30),
+                          _buildSection(
+                            context,
+                            '이용 약관',
+                            Icons.arrow_forward,
+                                () => {}, // 추가된 섹션
                           ),
                         ],
                       );

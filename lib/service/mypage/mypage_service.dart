@@ -54,7 +54,7 @@ class MyPageService {
 
 /// MyPageData 모델
 class MyPageData {
-  final String nickname;
+  final String nickName;
   final String email;
   final String profileImage;
   final double mannerRate;
@@ -62,7 +62,7 @@ class MyPageData {
   final List<Account> accountList;
 
   MyPageData({
-    required this.nickname,
+    required this.nickName,
     required this.email,
     required this.profileImage,
     required this.mannerRate,
@@ -72,7 +72,7 @@ class MyPageData {
 
   factory MyPageData.fromJson(Map<String, dynamic> json) {
     return MyPageData(
-      nickname: json['nickname'] ?? '닉네임 없음', // null 처리
+      nickName: json['nickName'] ?? '닉네임 없음', // null 처리
       email: json['email'] ?? '이메일 없음',
       profileImage: json['profileImage'] ?? '',
       mannerRate: (json['mannerRate'] as num?)?.toDouble() ?? 0.0,
