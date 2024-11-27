@@ -135,11 +135,14 @@ class ApiClient {
       'Content-Type': 'application/json',
     };
 
+    late http.Response response;
     if (method == 'POST') {
-      return await http.post(url, headers: headers, body: jsonEncode(body));
+      response = await http.post(url, headers: headers, body: jsonEncode(body));
     } else {
-      return await http.get(url, headers: headers);
+      response = await http.get(url, headers: headers);
     }
+
+    return response;
   }
 
   /// 토큰 만료 확인 메서드

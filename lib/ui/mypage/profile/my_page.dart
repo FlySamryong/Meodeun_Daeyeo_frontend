@@ -199,6 +199,109 @@ class _MyPageState extends State<MyPage> {
     );
   }
 
+  /// 마이페이지 콘텐츠 빌드
+  Widget _buildMyPageContent(MyPageData data) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+        ProfileSectionWidget(
+          nickName: data.nickName,
+          email: data.email,
+          mannerRate: data.mannerRate,
+          location: data.location,
+          profileImage: data.profileImage,
+          accountNum: data.accountList.isNotEmpty
+              ? data.accountList.first.accountNum
+              : '없음',
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              // 계좌 등록하기 버튼
+              _buildOutlinedButton(
+                label: "계좌 등록하기",
+                onPressed: () => _showAccountRegistrationDialog(context),
+              ),
+              const SizedBox(width: 8), // 버튼 간격
+              // 거주지 등록하기 버튼
+              _buildOutlinedButton(
+                label: "거주지 등록하기",
+                onPressed: () async {
+                  // 다이얼로그 실행 후 데이터 업데이트
+                  await _showLocationRegistrationDialog(context);
+                  await _updateMyPageData();
+                },
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 30),
+        _buildSection(
+          context,
+          '진행중인 대여 목록',
+          Icons.arrow_forward,
+              () => _navigateToPage<RentalHistoryPage>(context),
+        ),
+        const SizedBox(height: 30),
+        _buildSection(
+          context,
+          '최근 조회한 물품 목록',
+          Icons.arrow_forward,
+              () => _navigateToPage<RecentlyViewedPage>(context),
+        ),
+        const SizedBox(height: 30),
+        _buildSection(
+          context,
+          '고객센터',
+          Icons.arrow_forward,
+              () {
+            // TODO: 고객센터 페이지 이동
+          },
+        ),
+        const SizedBox(height: 30),
+        _buildSection(
+          context,
+          '이용 약관',
+          Icons.arrow_forward,
+              () {
+            // TODO: 이용 약관 페이지 이동
+          },
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  /// 아웃라인 버튼 생성
+  Widget _buildOutlinedButton({
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Colors.white,
+        side: BorderSide(
+          color: Theme.of(context).primaryColor,
+          width: 1.5,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
   /// 계좌 등록 다이얼로그 표시
   void _showAccountRegistrationDialog(BuildContext context) {
     showDialog(
@@ -271,4 +374,5 @@ class _MyPageState extends State<MyPage> {
       );
     }
   }
+  
 }
