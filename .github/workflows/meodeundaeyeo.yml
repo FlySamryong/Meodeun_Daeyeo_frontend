@@ -49,5 +49,5 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
         run: |
-          aws s3 sync build/web s3://$AWS_S3_BUCKET_NAME --acl public-read --delete
+          aws s3 sync build/web s3://$AWS_S3_BUCKET_NAME --delete
 
