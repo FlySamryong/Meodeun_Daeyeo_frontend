@@ -48,7 +48,7 @@ class ProfileSectionWidget extends StatelessWidget {
           _buildProfileDetailText('이메일: $email'),
           _buildProfileDetailText('등록자 별점: $mannerRate / 5'),
           _buildProfileDetailText(
-              '거주지: ${location.city}, ${location.district}, ${location.neighborhood}'),
+              '거주지: ${location.city} ${location.district} ${location.neighborhood}'),
           _buildProfileDetailText('계좌번호: $accountNum'),
         ],
       ),
