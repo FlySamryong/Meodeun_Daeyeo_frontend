@@ -43,7 +43,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           source: build/web/
-          target: /home/ubuntu/flutter-web/build/web/
+          target: /home/ubuntu/flutter-web
 
       # 5. Nginx 재시작
       - name: Restart Nginx
