@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -27,6 +29,8 @@ class AuthService {
 
       // JSON 응답을 파싱하여 데이터로 변환합니다.
       final data = await _parseJson(response.body);
+
+      await Future.delayed(Duration(milliseconds: 100));
 
       // 로그인 성공 여부를 확인하고, 성공 시 로그인 처리를 진행합니다.
       if (response.statusCode == 200) {
