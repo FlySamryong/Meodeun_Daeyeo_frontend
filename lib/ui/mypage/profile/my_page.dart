@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meodeundaeyeo/ui/mypage/location_register/location_registeration_dialog.dart';
 import 'package:meodeundaeyeo/ui/mypage/recent_item/recent_view_item_page.dart';
 import 'package:meodeundaeyeo/ui/mypage/rent_history/rental_history_page.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -22,7 +23,7 @@ class MyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final double baseWidth = 360;
     final double scaleWidth =
-        (sizingInformation.screenSize.width / baseWidth).clamp(0.8, 1.2);
+    (sizingInformation.screenSize.width / baseWidth).clamp(0.8, 1.2);
 
     return Scaffold(
       body: Center(
@@ -54,7 +55,7 @@ class MyPage extends StatelessWidget {
                                       _showAccountRegistrationDialog(context),
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor:
-                                        Theme.of(context).primaryColor,
+                                    Theme.of(context).primaryColor,
                                     backgroundColor: Colors.white,
                                     side: BorderSide(
                                       color: Theme.of(context).primaryColor,
@@ -78,10 +79,10 @@ class MyPage extends StatelessWidget {
                                 // 거주지 등록하기 버튼
                                 OutlinedButton(
                                   onPressed: () =>
-                                      {}, // 거주지 등록 페이지로 이동 (페이지 추가 필요)
+                                      _showLocationRegistrationDialog(context),
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor:
-                                        Theme.of(context).primaryColor,
+                                    Theme.of(context).primaryColor,
                                     backgroundColor: Colors.white,
                                     side: BorderSide(
                                       color: Theme.of(context).primaryColor,
@@ -111,21 +112,21 @@ class MyPage extends StatelessWidget {
                         context,
                         '진행중인 대여 목록',
                         Icons.arrow_forward,
-                        () => _navigateToPage<RentalHistoryPage>(context),
+                            () => _navigateToPage<RentalHistoryPage>(context),
                       ),
                       const SizedBox(height: 30),
                       _buildSection(
                         context,
                         '최근 조회한 물품 목록',
                         Icons.arrow_forward,
-                        () => _navigateToPage<RecentlyViewedPage>(context),
+                            () => _navigateToPage<RecentlyViewedPage>(context),
                       ),
                       const SizedBox(height: 30),
                       _buildSection(
                         context,
                         '고객센터',
                         Icons.arrow_forward,
-                        () {
+                            () {
                           // 고객센터 페이지로 이동 (페이지 추가 필요)
                         },
                       ),
@@ -134,7 +135,7 @@ class MyPage extends StatelessWidget {
                         context,
                         '이용 약관',
                         Icons.arrow_forward,
-                        () {
+                            () {
                           // 이용 약관 페이지로 이동 (페이지 추가 필요)
                         },
                       ),
@@ -161,19 +162,36 @@ class MyPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        // 계좌 등록 다이얼로그를 호출합니다.
         return AccountRegistrationDialog(parentContext: context);
       },
     );
   }
 
+  /// 거주지 등록 다이얼로그 표시 함수
+  void _showLocationRegistrationDialog(BuildContext context) async {
+    final selectedLocation = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return LocationRegistrationDialog(parentContext: context);
+      },
+    );
+
+    if (selectedLocation != null) {
+      // 거주지 등록 로직 예: 서버 전송
+      print("선택된 거주지: $selectedLocation");
+      // TODO: 서버로 데이터 전송
+      // Example:
+      // await ApiService().registerLocation(selectedLocation);
+    }
+  }
+
   /// 섹션 빌드 함수
   Widget _buildSection(
-    BuildContext context,
-    String title,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
+      BuildContext context,
+      String title,
+      IconData icon,
+      VoidCallback onTap,
+      ) {
     return SectionWidget(
       title: title,
       icon: icon,
