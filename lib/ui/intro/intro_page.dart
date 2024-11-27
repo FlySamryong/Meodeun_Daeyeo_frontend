@@ -67,6 +67,7 @@ class _IntroScreenState extends State<IntroScreen> {
       style: TextStyle(
         color: Colors.black,
         fontSize: 32 * scaleWidth,
+        height: 1.2, // Fixes line spacing
         fontFamily: 'BM Dohyeon',
         fontWeight: FontWeight.w400,
       ),
@@ -200,6 +201,7 @@ class _IntroScreenState extends State<IntroScreen> {
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 16 * scaleWidth,
+                height: 1.5, // Fixes line spacing
                 fontFamily: 'BM Dohyeon',
                 fontWeight: FontWeight.bold,
               ),
@@ -215,7 +217,6 @@ class _IntroScreenState extends State<IntroScreen> {
     final loginResponse = await _kakaoLoginService.loginWithKakao(context);
 
     if (loginResponse != null) {
-      // 로그인 성공 시 MainPage로 이동
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -226,7 +227,6 @@ class _IntroScreenState extends State<IntroScreen> {
         ),
       );
     } else {
-      // 로그인 실패 시 오류 메시지 표시
       showErrorDialog(context, "로그인에 실패했습니다. 다시 시도해주세요.");
     }
   }
