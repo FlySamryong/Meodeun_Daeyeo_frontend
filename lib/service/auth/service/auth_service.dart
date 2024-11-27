@@ -29,7 +29,7 @@ class AuthService {
       final data = _parseJson(response.body);
 
       // 로그인 성공 여부를 확인하고, 성공 시 로그인 처리를 진행합니다.
-      if (data['isSuccess'] == true) {
+      if (response.statusCode == 200) {
         return await _handleLoginSuccess(data['data'], context);
       } else {
         // 실패 시 에러 메시지를 다이얼로그로 표시합니다.
