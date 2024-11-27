@@ -49,7 +49,7 @@ class AuthService {
   /// 로그인 성공 시 사용자 정보를 저장하고, 로그인 응답 객체를 반환합니다.
   Future<LoginResponse?> _handleLoginSuccess(
       Map<String, dynamic> data, BuildContext context) async {
-    final loginResponse = LoginResponse.fromJson(data);
+    final loginResponse = await LoginResponse.fromJson(data);
     await TokenStorage.saveUserId(loginResponse.id);
     await TokenStorage.saveTokens(
         loginResponse.accessToken, loginResponse.refreshToken);

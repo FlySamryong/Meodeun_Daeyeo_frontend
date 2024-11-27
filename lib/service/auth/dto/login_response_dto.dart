@@ -12,7 +12,7 @@ class LoginResponse {
   });
 
   // 서버 응답 JSON을 DTO로 변환하는 팩토리 메서드
-  factory LoginResponse.fromJson(Map<String, dynamic> json) {
+  static Future<LoginResponse> fromJson(Map<String, dynamic> json) async {
     return LoginResponse(
       id: json['id'],
       name: json['name'],
