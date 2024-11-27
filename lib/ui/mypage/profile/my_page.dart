@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meodeundaeyeo/ui/mypage/recent_item/recent_view_item_page.dart';
 import 'package:meodeundaeyeo/ui/mypage/rent_history/rental_history_page.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../action/chat_nav_action.dart';
 import '../../../action/favorite_nav_action.dart';
 import '../../../action/home_nav_action.dart';
@@ -125,18 +126,20 @@ class MyPage extends StatelessWidget {
                         context,
                         '고객센터',
                         Icons.arrow_forward,
-                        () {
-                          // 고객센터 페이지로 이동 (페이지 추가 필요)
-                        },
+                        () => _launchUrl(
+                          'https://thirsty-carob-1df.notion.site/14b4f6c4f9c88065b4a3d86564787ee1',
+                          context,
+                        ),
                       ),
                       const SizedBox(height: 30),
                       _buildSection(
                         context,
                         '이용 약관',
                         Icons.arrow_forward,
-                        () {
-                          // 이용 약관 페이지로 이동 (페이지 추가 필요)
-                        },
+                        () => _launchUrl(
+                          'https://thirsty-carob-1df.notion.site',
+                          context,
+                        ),
                       ),
                       const SizedBox(height: 20),
                     ],
@@ -199,5 +202,18 @@ class MyPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// URL 열기 함수
+  Future<void> _launchUrl(String url, BuildContext context) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      // URL을 열 수 없는 경우 처리
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('URL을 열 수 없습니다.')),
+      );
+    }
   }
 }
