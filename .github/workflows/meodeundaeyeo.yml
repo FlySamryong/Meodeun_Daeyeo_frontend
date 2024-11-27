@@ -1,4 +1,4 @@
-name: Deploy Flutter Web to GitHub Pages
+name: Deploy Flutter Web to AWS EC2 with Nginx
 
 on:
   push:
@@ -6,18 +6,18 @@ on:
       - main
   pull_request:
     types:
-      - closed # Pull Request가 닫힐 때 이벤트 발생
+      - closed
     branches:
       - main
 
 jobs:
   deploy:
-    if: github.event.pull_request.merged == true || github.event_name == 'push' # 머지된 PR이나 푸시일 경우에만 실행
+    if: github.event.pull_request.merged == true || github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 체크아웃
-      - name: Checkout
+      # 1. 리포지토리 체크아웃
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       # 2. Flutter 설치
@@ -25,38 +25,53 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: 3.24.5
+          flutter-version: '3.24.5'
 
       # 3. 의존성 설치
       - name: Install Dependencies
         run: flutter pub get
 
-      # 4. 웹 빌드
-      - name: Build Web
+      # 4. Flutter Web 빌드
+      - name: Build Flutter Web
         run: flutter build web --web-renderer html
 
-      # 5. AWS CLI 설치
-      - name: Install AWS CLI
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y awscli
+      # 5. EC2에 파일 복사
+      - name: Upload Flutter Web to EC2
+        uses: appleboy/scp-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: build/web/
+          target: /home/ubuntu/flutter-web/build/web/
 
-      # 6. S3로 업로드
-      - name: Deploy to S3
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
-        run: |
-          aws s3 sync build/web s3://$AWS_S3_BUCKET_NAME --delete
+      # 6. Nginx 설정 및 재시작
+      - name: Configure Nginx and Restart
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            echo "Updating and Installing Dependencies..."
+            sudo apt update
+            sudo apt install -y nginx
 
-      # 7. CloudFront 캐시 무효화
-      - name: Invalidate CloudFront Cache
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_CLOUDFRONT_DIST_ID: ${{ secrets.AWS_CLOUDFRONT_DIST_ID }}
-        run: |
-          aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DIST_ID --paths "/*"
+            echo "Configuring Nginx for Flutter Web..."
+            sudo bash -c "cat > /etc/nginx/sites-available/default" << 'CONFIG'
+            server {
+                listen 80;
+                listen [::]:80;
+
+                root /home/ubuntu/flutter-web/build/web;
+                index index.html;
+
+                location / {
+                    try_files \$uri /index.html;
+                }
+            }
+            EOF 
+
+            echo "Restarting Nginx..."
+            sudo systemctl restart nginx
