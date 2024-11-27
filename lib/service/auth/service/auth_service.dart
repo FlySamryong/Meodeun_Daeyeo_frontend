@@ -27,6 +27,7 @@ class AuthService {
 
       // JSON 응답을 파싱하여 데이터로 변환합니다.
       final data = _parseJson(response.body);
+      print('Login response: $data');
 
       // 로그인 성공 여부를 확인하고, 성공 시 로그인 처리를 진행합니다.
       if (response.statusCode == 200) {
