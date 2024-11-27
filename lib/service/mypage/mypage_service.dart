@@ -72,14 +72,15 @@ class MyPageData {
 
   factory MyPageData.fromJson(Map<String, dynamic> json) {
     return MyPageData(
-      nickName: json['nickName'] ?? '닉네임 없음', // null 처리
+      nickName: json['nickName'] ?? '닉네임 없음',
+      // null 처리
       email: json['email'] ?? '이메일 없음',
       profileImage: json['profileImage'] ?? '',
       mannerRate: (json['mannerRate'] as num?)?.toDouble() ?? 0.0,
       location: Location.fromJson(json['location'] ?? {}),
       accountList: (json['accountList'] as List<dynamic>?)
-          ?.map((item) => Account.fromJson(item))
-          .toList() ??
+              ?.map((item) => Account.fromJson(item))
+              .toList() ??
           [],
     );
   }

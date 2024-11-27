@@ -125,16 +125,16 @@ class ApiClient {
 
   /// HTTP 요청 전송 메서드 (POST, GET 등)
   Future<http.Response> _sendRequest(
-      Uri url,
-      String accessToken,
-      String method, {
-        Map<String, dynamic>? body,
-      }) async {
+    Uri url,
+    String accessToken,
+    String method, {
+    Map<String, dynamic>? body,
+  }) async {
     final headers = {
       'Authorization': 'Bearer $accessToken',
       'Content-Type': 'application/json',
     };
-  //로그 추가
+    //로그 추가
     print('[HTTP REQUEST] $method $url');
     print('[HEADERS] $headers');
     if (body != null) {

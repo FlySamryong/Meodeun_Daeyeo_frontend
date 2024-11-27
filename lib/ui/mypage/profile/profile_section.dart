@@ -43,7 +43,8 @@ class ProfileSectionWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildProfileDetailText('닉네임: $nickName', fontWeight: FontWeight.bold),
+          _buildProfileDetailText('닉네임: $nickName',
+              fontWeight: FontWeight.bold),
           _buildProfileDetailText('이메일: $email'),
           _buildProfileDetailText('등록자 별점: $mannerRate / 5'),
           _buildProfileDetailText(
@@ -80,16 +81,16 @@ class ProfileSectionWidget extends StatelessWidget {
         shape: BoxShape.circle,
         image: profileImage.isNotEmpty
             ? DecorationImage(
-          image: NetworkImage(profileImage),
-          fit: BoxFit.cover,
-        )
+                image: NetworkImage(profileImage),
+                fit: BoxFit.cover,
+              )
             : null,
         color: profileImage.isEmpty ? Colors.grey.shade300 : null,
       ),
       child: profileImage.isEmpty
           ? const Center(
-        child: Text('프로필', style: TextStyle(color: Colors.black54)),
-      )
+              child: Text('프로필', style: TextStyle(color: Colors.black54)),
+            )
           : null,
     );
   }
