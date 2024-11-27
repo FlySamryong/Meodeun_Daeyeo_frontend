@@ -101,7 +101,6 @@ class _ItemListWidgetState extends State<ItemListWidget> {
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollInfo) {
         if (_shouldLoadMore(scrollInfo)) {
-          // 프레임 완료 후에 _fetchMoreItems를 호출하도록 예약
           SchedulerBinding.instance.addPostFrameCallback((_) {
             _fetchMoreItems();
           });
@@ -109,18 +108,17 @@ class _ItemListWidgetState extends State<ItemListWidget> {
         return false;
       },
       child: ListView.builder(
-        itemCount: _items.length + 1, // 로딩 중에는 하나의 추가 아이템을 보여줌
+        padding: const EdgeInsets.only(bottom: 20),
+        itemCount: _items.length + (_hasMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _items.length) {
-            return _isLoading
-                ? const Center(child: CircularProgressIndicator()) // 로딩 인디케이터
-                : const SizedBox.shrink(); // 데이터가 없으면 빈 위젯 반환
+            return const Center(child: CircularProgressIndicator());
           }
           return GestureDetector(
             onTap: () {
-              _navigateToItemDetailPage(index); // 아이템 클릭 시 상세 페이지로 이동
+              _navigateToItemDetailPage(index);
             },
-            child: _buildItemCard(_items[index]), // 아이템 카드 빌더
+            child: _buildItemCard(_items[index]),
           );
         },
       ),
@@ -233,7 +231,7 @@ class _ItemListWidgetState extends State<ItemListWidget> {
           ),
         ),
         const SizedBox(height: 5),
-        Text('대여 장소: $city, $district, $neighborhood'),
+        Text('대여 장소: $city $district $neighborhood'),
         const SizedBox(height: 5),
         Text('1일 대여료: ${item['fee'] ?? '정보 없음'}'),
         const SizedBox(height: 5),
