@@ -27,10 +27,10 @@ class AuthService {
 
       // JSON 응답을 파싱하여 데이터로 변환합니다.
       final data = _parseJson(response.body);
-      print('Login response: $data');
 
       // 로그인 성공 여부를 확인하고, 성공 시 로그인 처리를 진행합니다.
       if (response.statusCode == 200) {
+        print('Login success: ${data['data']['id']}');
         return await _handleLoginSuccess(data['data'], context);
       } else {
         // 실패 시 에러 메시지를 다이얼로그로 표시합니다.
@@ -46,6 +46,7 @@ class AuthService {
   /// 로그인 성공 시 사용자 정보를 저장하고, 로그인 응답 객체를 반환합니다.
   Future<LoginResponse?> _handleLoginSuccess(
       Map<String, dynamic> data, BuildContext context) async {
+    print('Login success: ${data['id']}');
     final loginResponse = LoginResponse.fromJson(data);
     await TokenStorage.saveUserId(loginResponse.id);
     await TokenStorage.saveTokens(
