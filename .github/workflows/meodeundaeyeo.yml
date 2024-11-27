@@ -1,4 +1,4 @@
-name: Deploy Flutter Web to AWS EC2 with Nginx
+name: Deploy to AWS EC2
 
 on:
   push:
@@ -16,12 +16,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 리포지토리 체크아웃
-      - name: Checkout Repository
+      # 1. 코드 체크아웃
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Flutter 설치
-      - name: Setup Flutter
+      # 2. Flutter 환경 설정
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -35,9 +35,9 @@ jobs:
       - name: Build Flutter Web
         run: flutter build web --web-renderer html
 
-      # 5. EC2에 파일 복사
-      - name: Upload Flutter Web to EC2
-        uses: appleboy/scp-action@v0.1.8
+      # 4. EC2 서버로 파일 전송
+      - name: Deploy to EC2
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
@@ -45,33 +45,12 @@ jobs:
           source: build/web/
           target: /home/ubuntu/flutter-web/build/web/
 
-      # 6. Nginx 설정 및 재시작
-      - name: Configure Nginx and Restart
-        uses: appleboy/ssh-action@v0.1.6
+      # 5. Nginx 재시작
+      - name: Restart Nginx
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
+          key: ${{ secrets.EC2_ssh_KEY }}
           script: |
-            echo "Updating and Installing Dependencies..."
-            sudo apt update
-            sudo apt install -y nginx
-
-            echo "Configuring Nginx for Flutter Web..."
-            sudo bash -c "cat > /etc/nginx/sites-available/default" << 'CONFIG'
-            server {
-                listen 80;
-                listen [::]:80;
-
-                root /home/ubuntu/flutter-web/build/web;
-                index index.html;
-
-                location / {
-                    try_files \$uri /index.html;
-                }
-            }
-            EOF 
-
-            echo "Restarting Nginx..."
             sudo systemctl restart nginx
