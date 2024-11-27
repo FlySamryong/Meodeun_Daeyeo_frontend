@@ -111,11 +111,16 @@ class _IntroScreenState extends State<IntroScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(10 * scaleWidth),
         ),
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (index) => setState(() => _currentPage = index),
-          children:
-              List.generate(totalPageCount, (index) => _buildIntroImage(index)),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10 * scaleWidth),
+          child: PageView(
+            controller: _pageController,
+            onPageChanged: (index) => setState(() => _currentPage = index),
+            children: List.generate(
+              totalPageCount,
+              (index) => _buildIntroImage(index),
+            ),
+          ),
         ),
       ),
     );
@@ -123,9 +128,16 @@ class _IntroScreenState extends State<IntroScreen> {
 
   /// 소개 이미지 빌더 함수
   Widget _buildIntroImage(int index) {
-    return Image.asset(
-      'assets/images/intro${index + 1}.png',
-      fit: BoxFit.cover,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10), // 둥근 모서리 유지
+      child: FractionallySizedBox(
+        widthFactor: 1.0, // 부모 컨테이너 너비의 100%
+        heightFactor: 1.0, // 부모 컨테이너 높이의 100%
+        child: Image.asset(
+          'assets/images/intro${index + 1}.png',
+          fit: BoxFit.cover, // 이미지 비율 유지하며 박스 채우기
+        ),
+      ),
     );
   }
 
