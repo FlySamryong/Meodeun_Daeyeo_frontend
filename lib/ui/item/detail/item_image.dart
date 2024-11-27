@@ -47,7 +47,7 @@ class ImageCarouselWidget extends StatelessWidget {
   BoxDecoration _containerDecoration() {
     return BoxDecoration(
       borderRadius: BorderRadius.circular(10),
-      color: Colors.grey.shade300,
+      color: Colors.white,
     );
   }
 }
