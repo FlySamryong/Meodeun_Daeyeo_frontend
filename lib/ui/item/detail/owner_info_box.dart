@@ -67,7 +67,9 @@ class OwnerInfoBoxWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DetailTextWidget(text: '닉네임: ${data['owner']['nickName']}'),
-        DetailTextWidget(text: '거주지: ${data['owner']?['location'] ?? '미입력'}'),
+        DetailTextWidget(
+            text:
+                '거주지: ${data['owner']?['location']['city'] ?? '미입력'} ${data['owner']?['location']['district'] ?? '미입력'} ${data['owner']?['location']['neighborhood'] ?? '미입력'}'),
         DetailTextWidget(
           text: '등록자 별점 후기: ${data['owner']['mannerRate']} / 5',
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../service/mypage/mypage_service.dart';
 import '../../app_title.dart';
 import '../../bottom_nav_bar.dart';
@@ -44,7 +45,7 @@ class _MyPageState extends State<MyPage> {
   Widget build(BuildContext context) {
     final double baseWidth = 360;
     final double scaleWidth =
-    (widget.sizingInformation.screenSize.width / baseWidth).clamp(0.8, 1.2);
+        (widget.sizingInformation.screenSize.width / baseWidth).clamp(0.8, 1.2);
 
     return Scaffold(
       body: Center(
@@ -133,143 +134,34 @@ class _MyPageState extends State<MyPage> {
           context,
           '진행중인 대여 목록',
           Icons.arrow_forward,
-              () => _navigateToPage<RentalHistoryPage>(context),
+          () => _navigateToPage<RentalHistoryPage>(context),
         ),
         const SizedBox(height: 30),
         _buildSection(
           context,
           '최근 조회한 물품 목록',
           Icons.arrow_forward,
-              () => _navigateToPage<RecentlyViewedPage>(context),
+          () => _navigateToPage<RecentlyViewedPage>(context),
         ),
         const SizedBox(height: 30),
         _buildSection(
           context,
           '고객센터',
           Icons.arrow_forward,
-              () =>
-              _launchUrl(
-                'https://thirsty-carob-1df.notion.site/14b4f6c4f9c88065b4a3d86564787ee1',
-                context,
-              ),
-        ),
-        const SizedBox(height: 30),
-        _buildSection(
-          context,
-          '이용 약관',
-          Icons.arrow_forward,
-              () =>
-              _launchUrl(
-                'https://thirsty-carob-1df.notion.site',
-                context,
-              ),
-        ),
-        const SizedBox(height: 20),
-      ],
-    );
-  }
-
-  /// 아웃라인 버튼 생성
-  Widget _buildOutlinedButton({
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        foregroundColor: Theme
-            .of(context)
-            .primaryColor,
-        backgroundColor: Colors.white,
-        side: BorderSide(
-          color: Theme
-              .of(context)
-              .primaryColor,
-          width: 1.5,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  /// 마이페이지 콘텐츠 빌드
-  Widget _buildMyPageContent(MyPageData data) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 20),
-        ProfileSectionWidget(
-          nickName: data.nickName,
-          email: data.email,
-          mannerRate: data.mannerRate,
-          location: data.location,
-          profileImage: data.profileImage,
-          accountNum: data.accountList.isNotEmpty
-              ? data.accountList.first.accountNum
-              : '없음',
-        ),
-        const SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              // 계좌 등록하기 버튼
-              _buildOutlinedButton(
-                label: "계좌 등록하기",
-                onPressed: () => _showAccountRegistrationDialog(context),
-              ),
-              const SizedBox(width: 8), // 버튼 간격
-              // 거주지 등록하기 버튼
-              _buildOutlinedButton(
-                label: "거주지 등록하기",
-                onPressed: () async {
-                  // 다이얼로그 실행 후 데이터 업데이트
-                  await _showLocationRegistrationDialog(context);
-                  await _updateMyPageData();
-                },
-              ),
-            ],
+          () => _launchUrl(
+            'https://thirsty-carob-1df.notion.site/14b4f6c4f9c88065b4a3d86564787ee1',
+            context,
           ),
         ),
         const SizedBox(height: 30),
         _buildSection(
           context,
-          '진행중인 대여 목록',
-          Icons.arrow_forward,
-              () => _navigateToPage<RentalHistoryPage>(context),
-        ),
-        const SizedBox(height: 30),
-        _buildSection(
-          context,
-          '최근 조회한 물품 목록',
-          Icons.arrow_forward,
-              () => _navigateToPage<RecentlyViewedPage>(context),
-        ),
-        const SizedBox(height: 30),
-        _buildSection(
-          context,
-          '고객센터',
-          Icons.arrow_forward,
-              () {
-            // TODO: 고객센터 페이지 이동
-          },
-        ),
-        const SizedBox(height: 30),
-        _buildSection(
-          context,
           '이용 약관',
           Icons.arrow_forward,
-              () {
-            // TODO: 이용 약관 페이지 이동
-          },
+          () => _launchUrl(
+            'https://thirsty-carob-1df.notion.site',
+            context,
+          ),
         ),
         const SizedBox(height: 20),
       ],
@@ -322,16 +214,17 @@ class _MyPageState extends State<MyPage> {
     );
 
     if (selectedLocation != null) {
-      print("선택된 거주지: $selectedLocation");
       // TODO: 서버로 데이터 전송 로직 추가
     }
   }
 
   /// 섹션 빌드
-  Widget _buildSection(BuildContext context,
-      String title,
-      IconData icon,
-      VoidCallback onTap,) {
+  Widget _buildSection(
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
     return SectionWidget(
       title: title,
       icon: icon,
@@ -344,20 +237,17 @@ class _MyPageState extends State<MyPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            ResponsiveBuilder(
-              builder: (context, sizingInformation) {
-                return Scaffold(
-                  body: Center(
-                    child: T == RentalHistoryPage
-                        ? RentalHistoryPage(
-                        sizingInformation: sizingInformation)
-                        : RecentlyViewedPage(
-                        sizingInformation: sizingInformation),
-                  ),
-                );
-              },
-            ),
+        builder: (context) => ResponsiveBuilder(
+          builder: (context, sizingInformation) {
+            return Scaffold(
+              body: Center(
+                child: T == RentalHistoryPage
+                    ? RentalHistoryPage(sizingInformation: sizingInformation)
+                    : RecentlyViewedPage(sizingInformation: sizingInformation),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -374,5 +264,4 @@ class _MyPageState extends State<MyPage> {
       );
     }
   }
-  
 }

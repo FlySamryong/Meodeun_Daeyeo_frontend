@@ -112,7 +112,12 @@ class _ItemListWidgetState extends State<ItemListWidget> {
         itemCount: _items.length + (_hasMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _items.length) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(Colors.green),
+              ),
+            );
           }
           return GestureDetector(
             onTap: () {
