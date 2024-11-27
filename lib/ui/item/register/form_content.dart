@@ -1,63 +1,346 @@
 import 'package:flutter/material.dart';
-import 'field/photo_upload_box.dart';
-import 'field/input_field.dart';
-import 'field/description_field.dart';
-import 'field/submit_button.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'dart:typed_data';
+import 'dart:html';
+import '../../../service/item/item_register_service.dart';
+import '../../../utils/show_error_dialog.dart';
+import '../../home/main_page.dart';
 
-/// 물품 등록 폼 컨텐츠 위젯
-class FormContentWidget extends StatelessWidget {
+class FormContentWidget extends StatefulWidget {
   final double scaleWidth;
 
   const FormContentWidget({required this.scaleWidth, super.key});
 
   @override
+  State<FormContentWidget> createState() => _FormContentWidgetState();
+}
+
+class _FormContentWidgetState extends State<FormContentWidget> {
+  final ItemRegisterService _itemService = ItemRegisterService();
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _feeController = TextEditingController();
+  final TextEditingController _depositController = TextEditingController();
+  final TextEditingController _periodController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
+  String? _selectedCategory;
+  String? _selectedCity;
+  String? _selectedDistrict;
+  String? _selectedNeighborhood;
+
+  final List<Uint8List> _imageFiles = [];
+  final List<String> _categories = ["전자제품", "의류", "도서"];
+
+  final Map<String, Map<String, List<String>>> _locations = {
+    "서울시": {
+      "강남구": ["역삼동", "청담동"],
+    },
+  };
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.all(15 * scaleWidth),
+        padding: EdgeInsets.all(15 * widget.scaleWidth),
         child: Column(
           children: [
             _buildPhotoUploadBox(),
             const SizedBox(height: 15),
-            _buildInputField('물품명'),
+            _buildDropdownField('카테고리', _categories, _selectedCategory,
+                (value) {
+              setState(() {
+                _selectedCategory = value;
+              });
+            }),
+            const SizedBox(height: 15),
+            _buildDropdownLocation(),
+            const SizedBox(height: 15),
+            _buildInputField('물품명', '예: 고성능 노트북', _nameController),
             const SizedBox(height: 10),
-            _buildInputField('거래 장소'),
+            _buildInputField('1일 대여료', '예: 5000', _feeController,
+                isNumeric: true),
             const SizedBox(height: 10),
-            _buildInputField('1일 대여료'),
+            _buildInputField('보증금', '예: 20000', _depositController,
+                isNumeric: true),
             const SizedBox(height: 10),
-            _buildInputField('보증금'),
-            const SizedBox(height: 10),
-            _buildInputField('대여 가능 기간'),
-            const SizedBox(height: 10),
-            _buildInputField('물품 카테고리'),
+            _buildInputField('대여 가능 기간', '예: 3 (3일)', _periodController,
+                isNumeric: true),
             const SizedBox(height: 20),
             _buildDescriptionField(),
             const SizedBox(height: 20),
             _buildSubmitButton(),
-            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
-  /// 사진 업로드 박스 빌드
-  Widget _buildPhotoUploadBox() {
-    return PhotoUploadBoxWidget(scaleWidth: scaleWidth);
+  /// 드롭다운 필드 위젯을 생성하는 메서드
+  Widget _buildDropdownField(String label, List<String> options,
+      String? selectedValue, ValueChanged<String?> onChanged) {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(color: Colors.green),
+        ),
+        floatingLabelStyle: const TextStyle(
+          color: Colors.green, // 초록색 라벨
+        ),
+      ),
+      dropdownColor: Colors.white,
+      // 드랍박스 배경 흰색
+      style: const TextStyle(color: Colors.black),
+      // 텍스트 색상
+      value: selectedValue,
+      onChanged: onChanged,
+      items: options.map((option) {
+        return DropdownMenuItem(
+          value: option,
+          child: Text(option),
+        );
+      }).toList(),
+    );
   }
 
-  /// 입력 필드 빌드
-  Widget _buildInputField(String labelText) {
-    return InputFieldWidget(labelText: labelText, scaleWidth: scaleWidth);
+  /// 입력 필드 위젯을 생성하는 메서드
+  Widget _buildInputField(
+      String label, String hint, TextEditingController controller,
+      {bool isNumeric = false}) {
+    return TextField(
+      controller: controller,
+      keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+      textAlignVertical: TextAlignVertical.top, // 텍스트 상단 정렬
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: const BorderSide(color: Colors.green), // 초록색 강조선
+        ),
+        floatingLabelStyle: const TextStyle(
+          color: Colors.green, // 초록색 라벨
+        ),
+      ),
+    );
   }
 
-  /// 물품 설명 필드 빌드
+  /// 설명 필드 위젯을 생성하는 메서드
   Widget _buildDescriptionField() {
-    return DescriptionFieldWidget(scaleWidth: scaleWidth);
+    return TextField(
+      controller: _descriptionController,
+      maxLines: 5,
+      textAlignVertical: TextAlignVertical.top,
+      decoration: InputDecoration(
+        labelText: '물품 설명',
+        hintText: '예: 이 노트북은 최신형이며 고사양 게임도 가능해요.',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(color: Colors.green, width: 2),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          borderSide: BorderSide(color: Colors.green, width: 2),
+        ),
+        floatingLabelStyle: const TextStyle(
+          color: Colors.green,
+        ),
+      ),
+    );
   }
 
-  /// 제출 버튼 빌드
+  /// 위치 선택 드롭다운 위젯을 생성하는 메서드
+  Widget _buildDropdownLocation() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDropdownField('시/도', _locations.keys.toList(), _selectedCity,
+            (value) {
+          setState(() {
+            _selectedCity = value;
+            _selectedDistrict = null;
+            _selectedNeighborhood = null;
+          });
+        }),
+        const SizedBox(height: 15),
+        if (_selectedCity != null)
+          _buildDropdownField(
+            '구/군',
+            _locations[_selectedCity]?.keys.toList() ?? [],
+            _selectedDistrict,
+            (value) {
+              setState(() {
+                _selectedDistrict = value;
+                _selectedNeighborhood = null;
+              });
+            },
+          ),
+        const SizedBox(height: 15),
+        if (_selectedDistrict != null)
+          _buildDropdownField(
+            '동',
+            _locations[_selectedCity]?[_selectedDistrict] ?? [],
+            _selectedNeighborhood,
+            (value) {
+              setState(() {
+                _selectedNeighborhood = value;
+              });
+            },
+          ),
+      ],
+    );
+  }
+
+  /// 등록하기 버튼 위젯을 생성하는 메서드
   Widget _buildSubmitButton() {
-    return SubmitButtonWidget(scaleWidth: scaleWidth);
+    return ElevatedButton(
+      onPressed: _submitForm,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+      child: const Text(
+        '등록하기',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  /// 사진 업로드 박스 위젯을 생성하는 메서드
+  Widget _buildPhotoUploadBox() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 8.0,
+          runSpacing: 8.0,
+          children: [
+            ..._imageFiles.map((file) {
+              return Stack(
+                children: [
+                  Image.memory(
+                    file,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.red),
+                      onPressed: () {
+                        setState(() {
+                          _imageFiles.remove(file);
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+            GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.add_a_photo, color: Colors.grey),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  /// 이미지 선택 다이얼로그를 띄우는 메서드
+  Future<void> _pickImage() async {
+    final uploadInput = FileUploadInputElement()..accept = 'image/*';
+    uploadInput.click();
+
+    uploadInput.onChange.listen((event) async {
+      final file = uploadInput.files!.first;
+      final reader = FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onLoadEnd.listen((event) {
+        setState(() {
+          _imageFiles.add(reader.result as Uint8List);
+        });
+      });
+    });
+  }
+
+  /// 폼 제출 메서드
+  Future<void> _submitForm() async {
+    if (_nameController.text.isEmpty ||
+        _feeController.text.isEmpty ||
+        _depositController.text.isEmpty ||
+        _periodController.text.isEmpty ||
+        _selectedCategory == null ||
+        _selectedCity == null ||
+        _selectedDistrict == null ||
+        _selectedNeighborhood == null) {
+      showErrorDialog(context, '모든 필드를 채워주세요.');
+      return;
+    }
+
+    final itemDTO = {
+      'name': _nameController.text,
+      'description': _descriptionController.text,
+      'period': int.tryParse(_periodController.text) ?? 1,
+      'fee': int.tryParse(_feeController.text) ?? 0,
+      'deposit': int.tryParse(_depositController.text) ?? 0,
+      'categoryList': [
+        {'name': _selectedCategory}
+      ],
+    };
+
+    final locationDTO = {
+      'city': _selectedCity,
+      'district': _selectedDistrict,
+      'neighborhood': _selectedNeighborhood,
+    };
+
+    final success = await _itemService.registerItem(
+      context: context,
+      imageFiles: _imageFiles,
+      itemDTO: itemDTO,
+      locationDTO: locationDTO,
+    );
+
+    if (success) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResponsiveBuilder(
+            builder: (context, sizingInformation) =>
+                MainPage(sizingInformation: sizingInformation),
+          ),
+        ),
+      );
+    }
   }
 }

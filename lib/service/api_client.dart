@@ -5,7 +5,7 @@ import '../../../utils/token_storage.dart';
 import '../../../utils/show_error_dialog.dart';
 
 class ApiClient {
-  final String _baseUrl = 'http://54.180.28.151:8080/api';
+  static const String baseUrl = 'http://54.180.28.151:8080/api';
 
   // 에러 메시지 상수 정의
   static const String _sessionExpiredMessage = '로그인 세션이 만료되었습니다. 다시 로그인해 주세요.';
@@ -17,7 +17,7 @@ class ApiClient {
     final refreshToken = await TokenStorage.getRefreshToken();
     if (refreshToken == null) return null;
 
-    final refreshUrl = Uri.parse('$_baseUrl/auth/kakao/reissue');
+    final refreshUrl = Uri.parse('$baseUrl/auth/kakao/reissue');
     try {
       final response = await http.post(
         refreshUrl,
@@ -80,7 +80,7 @@ class ApiClient {
   Future<http.Response> getWithoutAuth({
     required String endpoint,
   }) async {
-    Uri url = Uri.parse('$_baseUrl/$endpoint');
+    Uri url = Uri.parse('$baseUrl/$endpoint');
     final headers = {
       'Content-Type': 'application/json',
     };
@@ -97,7 +97,7 @@ class ApiClient {
     Map<String, dynamic>? body,
   }) async {
     String? accessToken = await TokenStorage.getAccessToken();
-    Uri url = Uri.parse('$_baseUrl/$endpoint');
+    Uri url = Uri.parse('$baseUrl/$endpoint');
 
     // 초기 요청 전송
     http.Response response = await _sendRequest(

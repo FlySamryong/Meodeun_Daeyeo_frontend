@@ -14,6 +14,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  meta: ^1.12.0
   kakao_flutter_sdk: ^1.9.5 # 전체 추가
   kakao_flutter_sdk_user: ^1.9.5 # 카카오 로그인 API 패키지
   kakao_flutter_sdk_share: ^1.9.5 # 카카오톡 공유 API 패키지
@@ -33,6 +34,10 @@ dependencies:
   web_socket_channel: ^3.0.0
   stomp_dart_client: ^2.1.0
   intl: ^0.17.0
+  http_parser: ^4.0.0
+  image_picker: ^0.8.8+1
+  file_picker: ^5.2.3
+  dio: ^5.2.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
