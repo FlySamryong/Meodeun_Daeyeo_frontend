@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:meodeundaeyeo/ui/intro/intro_page.dart';
 
+/// 앱 실행 진입점
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
