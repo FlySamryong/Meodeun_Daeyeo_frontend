@@ -6,7 +6,7 @@ on:
       - main
   pull_request:
     types:
-      - closed # Pull Request가 닫힐 때 이벤트
+      - closed # Pull Request가 닫힐 때 이벤트 발생
     branches:
       - main
 
