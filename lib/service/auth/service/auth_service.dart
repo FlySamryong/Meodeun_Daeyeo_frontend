@@ -34,6 +34,7 @@ class AuthService {
 
       // 로그인 성공 여부를 확인하고, 성공 시 로그인 처리를 진행합니다.
       if (response.statusCode == 200) {
+        print('Login success: ${data['data']}');
         return await _handleLoginSuccess(data['data'], context);
       } else {
         print('Login failed: ${data['message']}');
@@ -49,8 +50,11 @@ class AuthService {
   /// 로그인 성공 시 사용자 정보를 저장하고, 로그인 응답 객체를 반환합니다.
   Future<LoginResponse?> _handleLoginSuccess(
       Map<String, dynamic> data, BuildContext context) async {
+    print('Login success: $data');
     final loginResponse = await LoginResponse.fromJson(data);
+    print('Login success: ${loginResponse.id}');
     await TokenStorage.saveUserId(loginResponse.id);
+    print('Login success: ${loginResponse.id}');
     await TokenStorage.saveTokens(
         loginResponse.accessToken, loginResponse.refreshToken);
     print('Login success: ${loginResponse.id}');
