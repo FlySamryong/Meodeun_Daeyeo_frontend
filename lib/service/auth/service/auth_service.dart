@@ -26,14 +26,13 @@ class AuthService {
       );
 
       // JSON 응답을 파싱하여 데이터로 변환합니다.
-      final data = _parseJson(response.body);
+      final data = await _parseJson(response.body);
 
       // 로그인 성공 여부를 확인하고, 성공 시 로그인 처리를 진행합니다.
       if (response.statusCode == 200) {
-        print('Login success: ${data['data']['id']}');
         return await _handleLoginSuccess(data['data'], context);
       } else {
-        // 실패 시 에러 메시지를 다이얼로그로 표시합니다.
+        print('Login failed: ${data['message']}');
         showErrorDialog(context, data['message'] ?? _loginFailureMessage);
       }
     } catch (error) {
@@ -46,7 +45,6 @@ class AuthService {
   /// 로그인 성공 시 사용자 정보를 저장하고, 로그인 응답 객체를 반환합니다.
   Future<LoginResponse?> _handleLoginSuccess(
       Map<String, dynamic> data, BuildContext context) async {
-    print('Login success: ${data['id']}');
     final loginResponse = LoginResponse.fromJson(data);
     await TokenStorage.saveUserId(loginResponse.id);
     await TokenStorage.saveTokens(
@@ -91,15 +89,15 @@ class AuthService {
   }
 
   /// 토큰이 유효하지 않은 경우 에러 메시지를 표시합니다.
-  void _handleTokenInvalid(http.Response response, BuildContext context) {
-    final data = _parseJson(response.body);
+  void _handleTokenInvalid(http.Response response, BuildContext context) async {
+    final data = await _parseJson(response.body);
     if (data['code'] == 'AUTH403') {
       showErrorDialog(context, data['message'] ?? _tokenInvalidMessage);
     }
   }
 
   /// JSON 문자열을 파싱하여 Map 형태로 반환합니다.
-  Map<String, dynamic> _parseJson(String responseBody) {
+  Future<Map<String, dynamic>> _parseJson(String responseBody) async {
     return json.decode(responseBody);
   }
 
