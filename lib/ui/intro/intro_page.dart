@@ -206,7 +206,18 @@ class _IntroScreenState extends State<IntroScreen> {
             fontFamily: 'BM Dohyeon',
           ),
         ),
-        SizedBox(height: 8 * scaleHeight), // 버튼과 문구 사이 간격
+        SizedBox(height: 4 * scaleHeight), // 문구 간 간격
+        Text(
+          '크롬 브라우저 사용을 권장합니다.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 8 * scaleWidth, // 작은 글씨 크기
+            height: 1.2, // 줄 간격
+            fontFamily: 'BM Dohyeon',
+          ),
+        ),
+        SizedBox(height: 4 * scaleHeight), // 문구 간 간격
         Container(
           width: 350 * scaleWidth, // 버튼 너비를 소개 박스와 동일하게 설정
           alignment: Alignment.center, // 버튼 내부 정렬

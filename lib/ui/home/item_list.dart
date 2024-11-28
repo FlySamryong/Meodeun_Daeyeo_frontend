@@ -153,30 +153,51 @@ class _ItemListWidgetState extends State<ItemListWidget> {
       child: Container(
         width: double.infinity,
         decoration: _itemCardDecoration(), // 카드 스타일
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildItemImage(item['imageUrl']), // 이미지 부분
-                  const SizedBox(width: 20),
-                  Flexible(
-                    // 공간에 맞게 텍스트 조정
-                    child: _buildItemInfo(item),
-                  ),
-                ],
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildItemImage(item['imageUrl']), // 이미지 부분
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildItemTitleAndBadge(item), // 제목과 뱃지 부분
+                    const SizedBox(height: 10),
+                    _buildItemInfo(item), // 상세 정보
+                  ],
+                ),
               ),
-            ),
-            Positioned(
-              top: 10,
-              right: 10,
-              child: _buildItemAvailability(item['status']), // 대여 가능 여부
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  /// 제목과 대여 가능 여부 뱃지를 한 줄에 배치하는 함수
+  Widget _buildItemTitleAndBadge(Map<String, dynamic> item) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          // 제목을 가로 공간에 맞춰 확장
+          child: Text(
+            item['name'] ?? 'Unknown Item',
+            style: const TextStyle(
+              fontFamily: 'BM Dohyeon',
+              fontSize: 16,
+              color: Colors.black,
+            ),
+            maxLines: 2, // 최대 2줄까지 표시
+            overflow: TextOverflow.ellipsis, // 텍스트가 길 경우 생략
+          ),
+        ),
+        const SizedBox(width: 8),
+        _buildItemAvailability(item['status']), // 대여 가능 여부 뱃지
+      ],
     );
   }
 
@@ -190,21 +211,34 @@ class _ItemListWidgetState extends State<ItemListWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          item['name'] ?? 'Unknown Item',
-          style: const TextStyle(
-            fontFamily: 'BM Dohyeon',
-            fontSize: 16,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 5),
         Text('대여 장소: $city $district $neighborhood'),
         const SizedBox(height: 5),
         Text('1일 대여료: ${item['fee'] ?? '정보 없음'}'),
         const SizedBox(height: 5),
         Text('보증금: ${item['deposit'] ?? '정보 없음'}'),
       ],
+    );
+  }
+
+  /// 아이템 대여 가능 여부를 표시하는 함수
+  Widget _buildItemAvailability(String? available) {
+    final String status = available ?? 'Unknown';
+    final colorAndText = _getAvailabilityStatus(status);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      decoration: BoxDecoration(
+        color: colorAndText['color'],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        colorAndText['text'],
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 12, // 크기 조정
+        ),
+      ),
     );
   }
 
@@ -242,27 +276,6 @@ class _ItemListWidgetState extends State<ItemListWidget> {
           ? const Center(
               child: Text('물품 사진', style: TextStyle(color: Colors.grey)))
           : null,
-    );
-  }
-
-  /// 아이템 대여 가능 여부를 표시하는 함수
-  Widget _buildItemAvailability(String? available) {
-    final String status = available ?? 'Unknown';
-    final colorAndText = _getAvailabilityStatus(status);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      decoration: BoxDecoration(
-        color: colorAndText['color'],
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Text(
-        colorAndText['text'],
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
     );
   }
 

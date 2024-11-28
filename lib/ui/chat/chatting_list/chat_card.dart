@@ -20,10 +20,13 @@ class ChatCard extends StatelessWidget {
             _buildChatImage(chat['otherMemberProfile']),
             const SizedBox(width: 20),
             Expanded(
+              flex: 3, // 제목과 메시지 영역 비율 설정
               child: _buildChatInfo(chat['itemName'], chat['lastMessage']),
             ),
-            const SizedBox(width: 10),
-            _buildChatTime(chat['updatedDate']),
+            Expanded(
+              flex: 2, // 시간 영역 비율 설정
+              child: _buildChatTime(chat['updatedDate']),
+            ),
           ],
         ),
       ),
@@ -85,7 +88,7 @@ class ChatCard extends StatelessWidget {
             fontSize: 16,
             color: Colors.black,
           ),
-          maxLines: 1, // 제목이 한 줄을 넘어가면 말줄임
+          maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 5),
@@ -95,29 +98,26 @@ class ChatCard extends StatelessWidget {
             fontSize: 14,
             color: Colors.black54,
           ),
-          maxLines: 1, // 마지막 메시지도 말줄임 처리
+          maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
       ],
     );
   }
 
-  /// 마지막 메시지 시간 표시 위젯
+  /// 마지막 메시지 시간 표시 위젯 (크기 조정 및 레이아웃 개선)
   Widget _buildChatTime(String? lastMessageTime) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(10),
-      ),
+    return Align(
+      alignment: Alignment.topRight,
       child: Text(
         lastMessageTime != null
             ? DateTimeFormatter.formatToKoreanDateTime(lastMessageTime)
             : '',
         style: const TextStyle(
+          fontSize: 12, // 시간 텍스트 기본 크기
           color: Colors.black54,
-          fontWeight: FontWeight.bold,
         ),
+        textAlign: TextAlign.right,
       ),
     );
   }
