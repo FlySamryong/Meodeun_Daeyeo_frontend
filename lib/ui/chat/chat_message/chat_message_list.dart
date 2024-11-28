@@ -95,7 +95,8 @@ class ChatMessageList extends StatelessWidget {
   Widget _buildMessageCard(BuildContext context, ChatMessage message) {
     switch (message.type) {
       case ChatType.RENT_REQ:
-        return _buildRequestCard(context, message.content, roomId!, rentId!);
+        return _buildRequestCard(
+            context, message.content, roomId!, message.rentId);
       case ChatType.RENT_ACCEPT:
         return _buildAcceptanceCard(context, message.content);
       case ChatType.RENT_AGREE:
@@ -135,7 +136,7 @@ class ChatMessageList extends StatelessWidget {
 
   /// 대여 요청 카드
   Widget _buildRequestCard(
-      BuildContext context, String content, int roomId, int rentId) {
+      BuildContext context, String content, int roomId, int? rentId) {
     final isOwner = currentUserId == ownerId;
 
     return _buildCardTemplate(
@@ -145,7 +146,7 @@ class ChatMessageList extends StatelessWidget {
       messageWidgets: [
         Text(content, style: const TextStyle(fontSize: 14)),
         const SizedBox(height: 2),
-        if (isOwner)
+        if (isOwner && rentId != null)
           _buildActionButton(
             context: context,
             label: "대여 수락하기",
