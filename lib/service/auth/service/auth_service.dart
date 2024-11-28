@@ -50,15 +50,10 @@ class AuthService {
   /// 로그인 성공 시 사용자 정보를 저장하고, 로그인 응답 객체를 반환합니다.
   Future<LoginResponse?> _handleLoginSuccess(
       Map<String, dynamic> data, BuildContext context) async {
-    print('Login success: $data');
     final loginResponse = await LoginResponse.fromJson(data);
-    print('Login success: ${loginResponse.id}');
     await TokenStorage.saveUserId(loginResponse.id);
-    print('Login success: ${loginResponse.id}');
     await TokenStorage.saveTokens(
         loginResponse.accessToken, loginResponse.refreshToken);
-    print('Login success: ${loginResponse.id}');
-    print('Access token: ${loginResponse.accessToken}');
     return loginResponse;
   }
 
