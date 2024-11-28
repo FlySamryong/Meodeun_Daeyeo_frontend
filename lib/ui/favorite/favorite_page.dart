@@ -16,9 +16,9 @@ class FavoritesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double baseWidth = 360;
+    final double baseWidth = 400;
     final double scaleWidth =
-        (sizingInformation.screenSize.width / baseWidth).clamp(0.8, 1.2);
+        (sizingInformation.screenSize.width / baseWidth).clamp(1.0, 1.5);
 
     return Scaffold(
       body: Center(

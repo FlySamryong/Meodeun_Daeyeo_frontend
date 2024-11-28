@@ -22,7 +22,7 @@ class RentalHistoryPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Container(
-          width: 360 * scaleWidth,
+          width: 400 * scaleWidth,
           child: Column(
             children: [
               _buildAppTitle(),
@@ -37,8 +37,8 @@ class RentalHistoryPage extends StatelessWidget {
 
   /// 화면 크기 비율 계산 함수
   double _getScaleWidth() {
-    final double baseWidth = 360;
-    return (sizingInformation.screenSize.width / baseWidth).clamp(0.8, 1.2);
+    final double baseWidth = 400;
+    return (sizingInformation.screenSize.width / baseWidth).clamp(1.0, 1.5);
   }
 
   /// 앱 타이틀 빌드 함수

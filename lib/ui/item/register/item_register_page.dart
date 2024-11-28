@@ -17,11 +17,11 @@ class ItemRegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double scaleWidth =
-        (sizingInformation.screenSize.width / 360).clamp(0.8, 1.2);
+        (sizingInformation.screenSize.width / 400).clamp(1.0, 1.5);
     return Scaffold(
       body: Center(
         child: Container(
-          width: 360 * scaleWidth,
+          width: 400 * scaleWidth,
           child: Column(
             children: [
               const SizedBox(height: 20),

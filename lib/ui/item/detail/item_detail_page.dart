@@ -68,8 +68,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
   /// 화면 크기에 맞춘 컨테이너 너비 계산 함수
   double _calculateContainerWidth() {
-    return 360 *
-        (widget.sizingInformation.screenSize.width / 360).clamp(0.8, 1.2);
+    return 400 *
+        (widget.sizingInformation.screenSize.width / 400).clamp(1.0, 1.5);
   }
 
   /// 메인 컨텐츠 빌더 함수 (FutureBuilder 사용)

@@ -36,7 +36,7 @@ class _ChatListPageState extends State<ChatListPage> {
     return Scaffold(
       body: Center(
         child: Container(
-          width: 360 * scaleWidth, // 화면 크기에 맞춰 너비 조정
+          width: 400 * scaleWidth, // 화면 크기에 맞춰 너비 조정
           child: Column(
             children: [
               const SizedBox(height: 20), // 상단 여백
@@ -55,7 +55,7 @@ class _ChatListPageState extends State<ChatListPage> {
 
   /// 화면 크기에 따른 너비 비율을 계산하는 함수
   double _calculateScaleWidth(double screenWidth) {
-    return (screenWidth / 360).clamp(0.8, 1.2); // 최소 0.8, 최대 1.2로 제한
+    return (screenWidth / 400).clamp(1.0, 1.5);
   }
 
   /// 검색 박스를 생성하는 위젯 빌더

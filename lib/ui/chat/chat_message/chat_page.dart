@@ -191,11 +191,11 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     final double scaleWidth =
-        (widget.sizingInformation.screenSize.width / 360.0).clamp(0.8, 1.2);
+        (widget.sizingInformation.screenSize.width / 400.0).clamp(1.0, 1.5);
     return Scaffold(
       body: Center(
         child: Container(
-          width: 360.0 * scaleWidth,
+          width: 400.0 * scaleWidth,
           child: Column(
             children: [
               const SizedBox(height: 20),

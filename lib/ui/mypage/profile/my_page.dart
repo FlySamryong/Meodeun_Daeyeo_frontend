@@ -43,9 +43,9 @@ class _MyPageState extends State<MyPage> {
 
   @override
   Widget build(BuildContext context) {
-    final double baseWidth = 360;
+    final double baseWidth = 400;
     final double scaleWidth =
-        (widget.sizingInformation.screenSize.width / baseWidth).clamp(0.8, 1.2);
+        (widget.sizingInformation.screenSize.width / baseWidth).clamp(1.0, 1.5);
 
     return Scaffold(
       body: Center(

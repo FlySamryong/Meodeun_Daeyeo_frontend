@@ -21,7 +21,7 @@ class RecentlyViewedPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Container(
-          width: 360 * scaleWidth,
+          width: 400 * scaleWidth,
           child: Column(
             children: [
               _buildAppTitle(),
@@ -35,8 +35,8 @@ class RecentlyViewedPage extends StatelessWidget {
   }
 
   double _getScaleWidth() {
-    final double baseWidth = 360;
-    return (sizingInformation.screenSize.width / baseWidth).clamp(0.8, 1.2);
+    final double baseWidth = 400;
+    return (sizingInformation.screenSize.width / baseWidth).clamp(1.0, 1.5);
   }
 
   Widget _buildAppTitle() {

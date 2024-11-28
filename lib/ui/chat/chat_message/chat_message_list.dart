@@ -217,7 +217,7 @@ class ChatMessageList extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
       child: FractionallySizedBox(
-        widthFactor: 0.6,
+        widthFactor: 0.55,
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,

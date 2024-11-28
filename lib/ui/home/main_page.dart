@@ -34,7 +34,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: Center(
         child: Container(
-          width: 360 * scaleWidth, // 화면 크기에 따른 가변 너비 설정
+          width: 400 * scaleWidth, // 화면 크기에 따른 가변 너비 설정
           child: Stack(
             children: [
               Column(
@@ -60,7 +60,7 @@ class _MainPageState extends State<MainPage> {
 
   /// 화면 크기에 따른 스케일 너비 계산
   double _calculateScaleWidth() {
-    return (widget.sizingInformation.screenSize.width / 360).clamp(0.8, 1.2);
+    return (widget.sizingInformation.screenSize.width / 400).clamp(1.0, 1.5);
   }
 
   /// 필터 위젯 빌더 함수
