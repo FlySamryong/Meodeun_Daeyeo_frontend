@@ -20,8 +20,9 @@ class ChatCard extends StatelessWidget {
             _buildChatImage(chat['otherMemberProfile']),
             const SizedBox(width: 20),
             Expanded(
-                child: _buildChatInfo(chat['itemName'], chat['lastMessage'])),
-
+              child: _buildChatInfo(chat['itemName'], chat['lastMessage']),
+            ),
+            const SizedBox(width: 10),
             _buildChatTime(chat['updatedDate']),
           ],
         ),
@@ -84,6 +85,8 @@ class ChatCard extends StatelessWidget {
             fontSize: 16,
             color: Colors.black,
           ),
+          maxLines: 1, // 제목이 한 줄을 넘어가면 말줄임
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 5),
         Text(
@@ -92,6 +95,7 @@ class ChatCard extends StatelessWidget {
             fontSize: 14,
             color: Colors.black54,
           ),
+          maxLines: 1, // 마지막 메시지도 말줄임 처리
           overflow: TextOverflow.ellipsis,
         ),
       ],

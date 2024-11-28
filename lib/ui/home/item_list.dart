@@ -158,10 +158,14 @@ class _ItemListWidgetState extends State<ItemListWidget> {
             Padding(
               padding: const EdgeInsets.all(10),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildItemImage(item['imageUrl']), // 이미지 부분
                   const SizedBox(width: 20),
-                  Expanded(child: _buildItemInfo(item)), // 정보 부분
+                  Flexible(
+                    // 공간에 맞게 텍스트 조정
+                    child: _buildItemInfo(item),
+                  ),
                 ],
               ),
             ),
@@ -173,6 +177,34 @@ class _ItemListWidgetState extends State<ItemListWidget> {
           ],
         ),
       ),
+    );
+  }
+
+  /// 아이템 정보를 표시하는 함수
+  Widget _buildItemInfo(Map<String, dynamic> item) {
+    final location = item['location'] as Map<String, dynamic>? ?? {};
+    final city = location['city'] ?? '알 수 없는 도시';
+    final district = location['district'] ?? '알 수 없는 구';
+    final neighborhood = location['neighborhood'] ?? '알 수 없는 동';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          item['name'] ?? 'Unknown Item',
+          style: const TextStyle(
+            fontFamily: 'BM Dohyeon',
+            fontSize: 16,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text('대여 장소: $city $district $neighborhood'),
+        const SizedBox(height: 5),
+        Text('1일 대여료: ${item['fee'] ?? '정보 없음'}'),
+        const SizedBox(height: 5),
+        Text('보증금: ${item['deposit'] ?? '정보 없음'}'),
+      ],
     );
   }
 
@@ -210,34 +242,6 @@ class _ItemListWidgetState extends State<ItemListWidget> {
           ? const Center(
               child: Text('물품 사진', style: TextStyle(color: Colors.grey)))
           : null,
-    );
-  }
-
-  /// 아이템 정보를 표시하는 함수
-  Widget _buildItemInfo(Map<String, dynamic> item) {
-    final location = item['location'] as Map<String, dynamic>? ?? {};
-    final city = location['city'] ?? '알 수 없는 도시';
-    final district = location['district'] ?? '알 수 없는 구';
-    final neighborhood = location['neighborhood'] ?? '알 수 없는 동';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          item['name'] ?? 'Unknown Item',
-          style: const TextStyle(
-            fontFamily: 'BM Dohyeon',
-            fontSize: 16,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text('대여 장소: $city $district $neighborhood'),
-        const SizedBox(height: 5),
-        Text('1일 대여료: ${item['fee'] ?? '정보 없음'}'),
-        const SizedBox(height: 5),
-        Text('보증금: ${item['deposit'] ?? '정보 없음'}'),
-      ],
     );
   }
 
