@@ -112,12 +112,8 @@ class _ItemListWidgetState extends State<ItemListWidget> {
         itemCount: _items.length + (_hasMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _items.length) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor:
-                    AlwaysStoppedAnimation<Color>(Colors.green),
-              ),
-            );
+            // 로딩 상태를 숨기려면 빈 위젯 반환
+            return const SizedBox.shrink();
           }
           return GestureDetector(
             onTap: () {
