@@ -93,6 +93,7 @@ class ChatMessageList extends StatelessWidget {
 
   /// 메시지 카드 생성 (타입에 따라 다르게 처리)
   Widget _buildMessageCard(BuildContext context, ChatMessage message) {
+    print(message.rentId);
     switch (message.type) {
       case ChatType.RENT_REQ:
         return _buildRequestCard(
