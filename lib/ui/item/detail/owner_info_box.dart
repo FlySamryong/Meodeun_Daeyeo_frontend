@@ -72,7 +72,7 @@ class OwnerInfoBoxWidget extends StatelessWidget {
         DetailTextWidget(text: '닉네임: ${owner?['nickName'] ?? '미입력'}'),
         DetailTextWidget(
             text:
-                '거주지: ${location?['city'] ?? '미입력'} ${location?['district'] ?? '미입력'} ${location?['neighborhood'] ?? '미입력'}'),
+                '거주지: ${location?['city'] ?? ''} ${location?['district'] ?? ''} ${location?['neighborhood'] ?? ''}'),
         DetailTextWidget(
           text: '등록자 별점 후기: ${owner?['mannerRate'] ?? '미입력'} / 5',
         ),
