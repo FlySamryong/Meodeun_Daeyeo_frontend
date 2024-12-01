@@ -63,15 +63,18 @@ class OwnerInfoBoxWidget extends StatelessWidget {
 
   /// 등록자 세부 정보 텍스트를 구성하는 함수
   Widget _buildOwnerDetails() {
+    final owner = data['owner']; // owner 객체를 변수에 저장
+    final location = owner?['location']; // location 객체를 변수에 저장
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DetailTextWidget(text: '닉네임: ${data['owner']['nickName']}'),
+        DetailTextWidget(text: '닉네임: ${owner?['nickName'] ?? '미입력'}'),
         DetailTextWidget(
             text:
-                '거주지: ${data['owner']?['location']['city'] ?? '미입력'} ${data['owner']?['location']['district'] ?? '미입력'} ${data['owner']?['location']['neighborhood'] ?? '미입력'}'),
+                '거주지: ${location?['city'] ?? '미입력'} ${location?['district'] ?? '미입력'} ${location?['neighborhood'] ?? '미입력'}'),
         DetailTextWidget(
-          text: '등록자 별점 후기: ${data['owner']['mannerRate']} / 5',
+          text: '등록자 별점 후기: ${owner?['mannerRate'] ?? '미입력'} / 5',
         ),
       ],
     );

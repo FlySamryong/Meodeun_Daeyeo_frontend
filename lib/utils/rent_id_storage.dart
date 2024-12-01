@@ -1,21 +1,20 @@
-import 'dart:html' as html;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RentIdStorage {
   static const String _rentIdKeyPrefix = 'rent_id_';
 
-  // Save rentId
   static Future<void> saveRentId(int roomId, int rentId) async {
-    html.window.localStorage['$_rentIdKeyPrefix$roomId'] = rentId.toString();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('$_rentIdKeyPrefix$roomId', rentId);
   }
 
-  // Load rentId
   static Future<int?> loadRentId(int roomId) async {
-    final rentId = html.window.localStorage['$_rentIdKeyPrefix$roomId'];
-    return rentId != null ? int.tryParse(rentId) : null;
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('$_rentIdKeyPrefix$roomId');
   }
 
-  // Clear rentId
   static Future<void> clearRentId(int roomId) async {
-    html.window.localStorage.remove('$_rentIdKeyPrefix$roomId');
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('$_rentIdKeyPrefix$roomId');
   }
 }
