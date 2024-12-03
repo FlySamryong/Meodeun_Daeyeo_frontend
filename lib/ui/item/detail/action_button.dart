@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meodeundaeyeo/utils/token_storage.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import '../../../service/chat/service/chat_page_service.dart';
 import '../../../service/member/member_service.dart';
@@ -69,11 +70,22 @@ class ActionButtonsWidget extends StatelessWidget {
 
   /// 채팅 버튼 위젯
   Widget _buildChatButton(BuildContext context) {
-    return _buildActionButton(
-      icon: Icons.chat,
-      label: '채팅하기',
-      color: Colors.yellow,
-      onPressed: () => _onChatButtonPressed(context), // 채팅 버튼 눌렀을 때 호출
+    return FutureBuilder<int?>(
+      future: TokenStorage.getUserId(),
+      builder: (context, snapshot) {
+        // 데이터 처리
+        final currentUserId = snapshot.data;
+        final isOwner = currentUserId == data['owner']['memberId'];
+
+        return _buildActionButton(
+          icon: Icons.chat,
+          label: '채팅하기',
+          color: Colors.yellow,
+          onPressed: isOwner
+              ? null // 소유자일 경우 버튼 비활성화
+              : () => _onChatButtonPressed(context), // 채팅 버튼 눌렀을 때 호출
+        );
+      },
     );
   }
 
