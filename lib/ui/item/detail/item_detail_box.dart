@@ -20,7 +20,8 @@ class ItemDetailBoxWidget extends StatelessWidget {
           const SizedBox(height: 20),
           _buildDescriptionBox(),
           const SizedBox(height: 20),
-          _buildDetailText('대여 가능 여부', data['status'] ?? '대여 가능'),
+          _buildDetailText(
+              '대여 가능 여부', data['status'] != 'RENTED' ? '대여 가능' : '대여 중'),
           _buildDetailText('1일 대여료', '${data['fee']}원'),
           _buildDetailText('보증금', '${data['deposit']}원'),
           _buildDetailText(
